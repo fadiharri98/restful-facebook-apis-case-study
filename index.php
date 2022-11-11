@@ -1,3 +1,9 @@
 <?php
+header('Content-Type: application/json; charset=utf-8');
 
-echo $_SERVER['REQUEST_METHOD'] . " " . $_SERVER['REQUEST_URI'];
+require_once "constants/StatusCodes.php";
+require_once "components/Route.php";
+
+require_once "routes/v1/urls.php";
+
+echo Route::handleRequest();
