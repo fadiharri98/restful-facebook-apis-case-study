@@ -15,3 +15,9 @@ Dotenv::createImmutable(__DIR__)->safeLoad();
  */
 header('Content-Type: application/json; charset=utf-8');
 
+require_once "constants/StatusCodes.php";
+require_once "components/Route.php";
+
+require_once "routes/v1/urls.php";
+
+echo Route::handleRequest();
