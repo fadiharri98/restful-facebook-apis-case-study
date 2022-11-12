@@ -1,9 +1,8 @@
 <?php
-require_once __DIR__ . "/BaseController.php";
 
 class UserController extends BaseController
 {
-    public static function get()
+    protected function get()
     {
         // return some data from DB
         return [
@@ -21,18 +20,18 @@ class UserController extends BaseController
                     'created' => "25/10/2016 14:50:25"
                 ]
             ],
-            "status_code" => 200
+            "status_code" => StatusCodes::SUCCESS
         ];
     }
 
-    public static function post()
+    protected function post()
     {
         // some actions
         return [
             'data' => [
                 'message' => "Success"
             ],
-            'status_code' => 200
+            'status_code' => StatusCodes::SUCCESS
         ];
     }
 }
