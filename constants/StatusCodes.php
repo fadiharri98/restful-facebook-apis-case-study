@@ -9,6 +9,7 @@ class StatusCodes
     // 400
     const NOT_FOUND = 404;
     const METHOD_NOT_ALLOWED = 405;
+    const VALIDATION_ERROR = 422;
     // 500
     const INTERNAL_ERROR = 501;
 }
