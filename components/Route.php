@@ -19,9 +19,11 @@ class Route
      * @param array $uri_parts
      * @return array
      */
-    private static function getUriWithParams(array $uri_parts): array
+    private static function mapUriWithParams(array $uri_parts): array
     {
         /*
+         * mapping target route (as Uri) with route-params through function `$uri_parts` parameter.
+         * if mapping failed, an empty array will be the result.
         array structure like
             [
                 'uri' => "",
@@ -80,10 +82,10 @@ class Route
 
     public static function handleRequest()
     {
-        $request_uri = array_slice(explode('/', $_SERVER['REQUEST_URI']), 2);
+        $request_uri_parts = array_slice(explode('/', $_SERVER['REQUEST_URI']), 2);
         $request_method = $_SERVER['REQUEST_METHOD'];
 
-        $uri_params = self::getUriWithParams($request_uri);
+        $uri_params = self::mapUriWithParams($request_uri_parts);
 
         $uri = $uri_params['uri'] ?? "";
         $params = $uri_params['params'] ?? "";
