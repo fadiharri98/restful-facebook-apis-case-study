@@ -22,7 +22,7 @@ class Route
     private static function mapUriWithParams(array $uri_parts): array
     {
         /*
-         * mapping target route (as Uri) with route-params through function `$uri_parts` parameter.
+         * mapping target route (as Uri) & detecting its route-params with passed uri.
          * if mapping failed, an empty array will be the result.
         array structure like
             [
