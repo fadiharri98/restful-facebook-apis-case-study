@@ -1,4 +1,5 @@
 <?php
+namespace Constants;
 
 class StatusCodes
 {
