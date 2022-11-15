@@ -1,4 +1,8 @@
 <?php
+namespace Components;
+
+use Exception;
+use Constants\StatusCodes;
 
 class Route
 {
@@ -107,7 +111,6 @@ class Route
         else
         {
             $controller = self::$_ROUTES[$url][$request_method];
-            require_once "controllers/$controller.php";
 
             $response = (new $controller())->$request_method(... $params);
         }
