@@ -1,4 +1,7 @@
 <?php
+namespace Controllers;
+
+use Constants\StatusCodes;
 
 class LikeController extends BaseController
 {

@@ -1,4 +1,7 @@
 <?php
+namespace Controllers;
+
+use Exception;
 
 abstract class BaseController
 {
