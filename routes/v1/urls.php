@@ -1,4 +1,9 @@
 <?php
+use Components\Route;
+use Controllers\UserController;
+use Controllers\PostController;
+use Controllers\LikeController;
+
 $api_v1 = "api/v1";
 
 Route::GET("$api_v1/users", UserController::class);
