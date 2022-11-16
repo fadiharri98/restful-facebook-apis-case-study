@@ -6,7 +6,7 @@ use Constants\StatusCodes;
 
 class Route
 {
-    const SUPPORTED_METHODS = ['GET', 'POST'];
+    const SUPPORTED_METHODS = ['GET', 'POST', 'PUT', 'DELETE'];
 
     private static $_ROUTES = [];
 
@@ -82,6 +82,16 @@ class Route
     public static function POST($url, $controller)
     {
         self::register('POST', $url, $controller);
+    }
+
+    public static function DELETE($url, $controller) : void
+    {
+        self::register('DELETE', $url, $controller);
+    }
+
+    public static function PUT($url, $controller) : void
+    {
+        self::register('PUT', $url, $controller);
     }
 
     public static function handleRequest()
