@@ -1,70 +1,50 @@
 <?php
 namespace Controllers;
 
-use Constants\StatusCodes;
+use Constants\RequestVerbs;
 use Exception;
 
 abstract class BaseController
 {
     /**
-     * The default representing the structure of expected response
-     * @var array
+     * Each request verb (method) has an equivalent controller method.
+     * Should subclass controller implements them according what did registered in route.
+     * Should all these methods be in-accessible by define them as protected or private.
+     * @var array|string[]
      */
-    private array $defaultResponse = [
-        'data' => '',
-        'status_code' => StatusCodes::SUCCESS
+    private array $handlerMap = [
+        RequestVerbs::GET => 'index',
+        RequestVerbs::POST => 'create',
+        RequestVerbs::PUT => 'update',
+        RequestVerbs::DELETE => 'destroy'
     ];
 
     /**
-     * Should override by subclass to provide custom behavior
-     * @return array
+     * @throws Exception if handler (method) doesn't exist.
      */
-    protected function get(): array
-    {
-        return $this->defaultResponse;
-    }
-
-    /**
-     * Should override by subclass to provide custom behavior
-     * @return array
-     */
-    protected function post(): array
-    {
-        return $this->defaultResponse;
-    }
-
-    /**
-     * Should override by subclass to provide custom behavior
-     * @return array
-     */
-    protected function put(): array
-    {
-        return $this->defaultResponse;
-    }
-
-    /**
-     * Should override by subclass to provide custom behavior
-     * @return array
-     */
-    protected function delete(): array
-    {
-        return $this->defaultResponse;
-    }
-
     public function __call($name, $arguments)
     {
-        $response = $this->$name(...$arguments);
+        $handler = $this->handlerMap[$name] ?? $name;
+
+        if (! method_exists($this, $handler))
+        {
+            $exception_message = sprintf(
+                "Handler `%s` not defined in `%s` controller.",
+                $handler,
+                get_class($this)
+            );
+            throw new Exception("$exception_message");
+        }
+
+        $response = $this->$handler(...$arguments);
 
         /**
          * validation: response should always has `data` & `status_code`
          */
-        if (! array_key_exists('data', $response))
+        if (! array_key_exists('data', $response) || ! array_key_exists('status_code', $response))
         {
-            throw new Exception("response should contains data associated with `data` key.");
-        }
-        elseif (! array_key_exists('status_code', $response))
-        {
-            throw new Exception("response should contains a status code associated with `status_code` key.");
+            throw new Exception(
+                "data in response should be in `data` key & status code in `status_code` key.");
         }
 
         return $response;
