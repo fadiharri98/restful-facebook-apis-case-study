@@ -9,7 +9,7 @@ class PostController extends BaseController
     {
         list($user_id,) = $params;
 
-        // expect id, if there is no id, then validation exception response
+        // expect id, if there is no id, then validation exception `response`
         if (! $user_id)
         {
             return [
