@@ -10,13 +10,14 @@ class Route
 
     private static $_ROUTES = [];
 
-    private static function register($method, $url, $controller)
+    private static function register($method, $url, $controller, $custom_handler=null)
     {
         if (! in_array($method, self::SUPPORTED_METHODS)) {
             throw new Exception("Route::$method, `$method` isn't supported.");
         }
 
-        self::$_ROUTES[$url][$method] = $controller;
+        self::$_ROUTES[$url][$method]['controller'] = $controller;
+        self::$_ROUTES[$url][$method]['custom_handler'] = $custom_handler;
     }
 
     /**
@@ -31,6 +32,7 @@ class Route
         array structure like
             [
                 'url' => "",
+                'custom_handler' => "",
                 'params' => []
             ]
         array can be empty if not route is found.
@@ -64,8 +66,10 @@ class Route
 
             if (! $break_loop)
             {
+                $method = $_SERVER['REQUEST_METHOD'];
                 return [
                     'url' => $route,
+                    'custom_handler' => self::$_ROUTES[$route][$method]['custom_handler'] ?? false,
                     'params' => $params
                 ];
             }
@@ -74,24 +78,24 @@ class Route
         return [];
     }
 
-    public static function GET($url, $controller)
+    public static function GET($url, $controller, $custom_handler=null)
     {
-        self::register('GET', $url, $controller);
+        self::register('GET', $url, $controller, $custom_handler);
     }
 
-    public static function POST($url, $controller)
+    public static function POST($url, $controller, $custom_handler=null)
     {
-        self::register('POST', $url, $controller);
+        self::register('POST', $url, $controller, $custom_handler);
     }
 
-    public static function DELETE($url, $controller) : void
+    public static function DELETE($url, $controller, $custom_handler=null) : void
     {
-        self::register('DELETE', $url, $controller);
+        self::register('DELETE', $url, $controller, $custom_handler);
     }
 
-    public static function PUT($url, $controller) : void
+    public static function PUT($url, $controller, $custom_handler=null) : void
     {
-        self::register('PUT', $url, $controller);
+        self::register('PUT', $url, $controller, $custom_handler);
     }
 
     public static function handleRequest()
@@ -120,9 +124,9 @@ class Route
         }
         else
         {
-            $controller = self::$_ROUTES[$url][$request_method];
-
-            $response = (new $controller())->$request_method(... $params);
+            $controller = self::$_ROUTES[$url][$request_method]['controller'];
+            $handler = self::$_ROUTES[$url][$request_method]['custom_handler'] ?: $request_method;
+            $response = (new $controller())->$handler(... $params);
         }
 
         http_response_code($response['status_code']);
