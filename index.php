@@ -16,7 +16,7 @@ Dotenv::createImmutable(__DIR__)->safeLoad();
 header('Content-Type: application/json; charset=utf-8');
 
 /*
- * register all app APIs (according to RESTFUL-API standards)
+ * register all app URLs (according to RESTFUL-API standards)
  */
 require_once "routes/v1/urls.php";
 
