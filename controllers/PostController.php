@@ -5,10 +5,22 @@ use Constants\StatusCodes;
 
 class PostController extends BaseController
 {
-    protected function get(...$params): array
+    protected function show($user_id, $post_id): array
     {
-        list($user_id,) = $params;
+        return [
+            'data' => [
+                'id' => $post_id,
+                'title' => "Foo",
+                'description' => "foo description",
+                'created' => "25/11/2020 09:12:55",
+                'user_id' => $user_id
+            ],
+            'status_code' => StatusCodes::SUCCESS
+        ];
+    }
 
+    protected function index($user_id): array
+    {
         // expect id, if there is no id, then validation exception `response`
         if (! $user_id)
         {
@@ -53,10 +65,8 @@ class PostController extends BaseController
         ];
     }
 
-    protected function post(...$params): array
+    protected function create($user_id): array
     {
-        list($user_id, ) = $params;
-
         // some actions
         return [
             'data' => [
@@ -66,10 +76,8 @@ class PostController extends BaseController
         ];
     }
 
-    protected function put(...$params): array
+    protected function update($user_id, $post_id): array
     {
-        list($user_id, $post_id) = $params;
-
         // some actions
         return [
             'data' => [
@@ -79,10 +87,8 @@ class PostController extends BaseController
         ];
     }
 
-    protected function delete(...$params): array
+    protected function destroy($user_id, $post_id): array
     {
-        list($user_id, $post_id) = $params;
-
         // some actions
         return [
             'data' => [

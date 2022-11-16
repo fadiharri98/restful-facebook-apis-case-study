@@ -5,10 +5,8 @@ use Constants\StatusCodes;
 
 class LikeController extends BaseController
 {
-    protected function get(): array
+    protected function index($post_id): array
     {
-        list($post_id,) = func_get_args();
-
         // expect id, if there is no id, then validation exception response
         if (! $post_id)
         {
@@ -50,7 +48,7 @@ class LikeController extends BaseController
         ];
     }
 
-    protected function post(): array
+    protected function create(): array
     {
         // some actions
         return [

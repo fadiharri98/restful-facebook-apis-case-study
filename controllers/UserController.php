@@ -8,7 +8,7 @@ class UserController extends BaseController
     /**
      * @return array
      */
-    protected function get(): array
+    protected function index(): array
     {
         // return some data from DB
         return [
@@ -33,8 +33,7 @@ class UserController extends BaseController
     /**
      * @return array
      */
-
-    protected function post(): array
+    protected function create(): array
     {
         // some actions
         return [
