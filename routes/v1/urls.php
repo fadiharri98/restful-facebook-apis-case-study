@@ -11,6 +11,7 @@ Route::POST("$api_v1/users", UserController::class);
 
 Route::GET("$api_v1/users/{user_id}/posts", PostController::class);
 Route::POST("$api_v1/users/{user_id}/posts", PostController::class);
+Route::GET("$api_v1/users/{user_id}/posts/{post_id}", PostController::class, "show");
 Route::PUT("$api_v1/users/{user_id}/posts/{post_id}", PostController::class);
 Route::DELETE("$api_v1/users/{user_id}/posts/{post_id}", PostController::class);
 
