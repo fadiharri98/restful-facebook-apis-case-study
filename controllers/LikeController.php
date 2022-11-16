@@ -5,7 +5,7 @@ use Constants\StatusCodes;
 
 class LikeController extends BaseController
 {
-    protected function get()
+    protected function get(): array
     {
         list($post_id,) = func_get_args();
 
@@ -50,7 +50,7 @@ class LikeController extends BaseController
         ];
     }
 
-    protected function post()
+    protected function post(): array
     {
         // some actions
         return [

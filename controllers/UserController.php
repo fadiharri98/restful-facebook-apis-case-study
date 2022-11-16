@@ -5,7 +5,10 @@ use Constants\StatusCodes;
 
 class UserController extends BaseController
 {
-    protected function get()
+    /**
+     * @return array
+     */
+    protected function get(): array
     {
         // return some data from DB
         return [
@@ -27,7 +30,11 @@ class UserController extends BaseController
         ];
     }
 
-    protected function post()
+    /**
+     * @return array
+     */
+
+    protected function post(): array
     {
         // some actions
         return [

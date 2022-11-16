@@ -5,9 +5,9 @@ use Constants\StatusCodes;
 
 class PostController extends BaseController
 {
-    protected function get()
+    protected function get(...$params): array
     {
-        list($user_id,) = func_get_args();
+        list($user_id,) = $params;
 
         // expect id, if there is no id, then validation exception response
         if (! $user_id)
@@ -53,12 +53,40 @@ class PostController extends BaseController
         ];
     }
 
-    protected function post()
+    protected function post(...$params): array
     {
+        list($user_id, ) = $params;
+
         // some actions
         return [
             'data' => [
-                'message' => "Success"
+                'message' => "[PostController.POST] User #$user_id create new post."
+            ],
+            'status_code' => StatusCodes::SUCCESS
+        ];
+    }
+
+    protected function put(...$params): array
+    {
+        list($user_id, $post_id) = $params;
+
+        // some actions
+        return [
+            'data' => [
+                'message' => "[PostController.PUT] Post #$post_id successfully updated by User #$user_id."
+            ],
+            'status_code' => StatusCodes::SUCCESS
+        ];
+    }
+
+    protected function delete(...$params): array
+    {
+        list($user_id, $post_id) = $params;
+
+        // some actions
+        return [
+            'data' => [
+                'message' => "[PostController.DELETE] Post #$post_id successfully deleted by User #$user_id."
             ],
             'status_code' => StatusCodes::SUCCESS
         ];
