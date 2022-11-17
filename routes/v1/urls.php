@@ -7,4 +7,3 @@
 use Components\Route;
 
 $api_v1 = "api/v1";
-
