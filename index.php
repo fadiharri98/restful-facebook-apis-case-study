@@ -24,4 +24,20 @@ require_once "routes/v1/urls.php";
  * handle coming request via Route component
  */
 use Components\Route;
-echo Route::handleRequest();
+try {
+    echo Route::handleRequest();
+} catch (Exception $e) {
+    // check if we in debug mode first, so we can clear what exactly the exception is.
+    $debugModeIsActive = (($_ENV['DEBUG_MODE'] ?? "false") == "true");
+
+    $exceptionResponse = [
+        "error" => "Internal server error.",
+        "status_code" => \Constants\StatusCodes::INTERNAL_ERROR
+    ];
+
+    if($debugModeIsActive) {
+        $exceptionResponse['error'] = $e->getMessage();
+    }
+
+    echo json_encode($exceptionResponse);
+}
