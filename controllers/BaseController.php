@@ -1,8 +1,10 @@
 <?php
 namespace Controllers;
 
+use Components\ValidationComponent;
 use Constants\RequestVerbs;
 use Exception;
+use Helpers\RequestHelper;
 
 abstract class BaseController
 {
@@ -19,6 +21,36 @@ abstract class BaseController
         RequestVerbs::DELETE => 'destroy'
     ];
 
+    protected ValidationComponent $validationComponent;
+
+    /**
+     * register rules for each handler in 3 levels -> url, query, and payload
+     * supported rules are listed in constants.Rules
+     * schema structure
+     * [
+     *  ...,
+     *  'handler' => [
+     *      'url' => [
+     *          ...
+     *      ],
+     *      'query' => [
+     *          ...
+     *      ],
+     *      'payload' => [
+     *          ...
+     *      ]
+     *  ],
+     *  ...
+     * ]
+     * @var array $validationSchema
+     */
+    protected array $validationSchema;
+
+    public function __construct()
+    {
+        $this->validationComponent = new ValidationComponent();
+    }
+
     /**
      * @throws Exception if handler (method) doesn't exist.
      */
@@ -34,6 +66,25 @@ abstract class BaseController
                 get_class($this)
             );
             throw new Exception("$exception_message");
+        }
+
+        $handler_validation = ($this->validationSchema[$handler] ?? []);
+
+        if (key_exists('url', $handler_validation))
+        {
+            $this->validationComponent->validateUrlParams($handler_validation['url'], [...$arguments]);
+        }
+
+        if (key_exists('query', $handler_validation))
+        {
+            $queryParams = RequestHelper::getQueryParams();
+            $this->validationComponent->validateQueryParams($handler_validation['query'], $queryParams);
+        }
+
+        if (key_exists('payload', $handler_validation))
+        {
+            $payload = RequestHelper::getRequestPayload();
+            $this->validationComponent->validateRequestPayload($handler_validation['payload'], $payload);
         }
 
         $response = $this->$handler(...$arguments);
