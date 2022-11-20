@@ -24,20 +24,34 @@ require_once "routes/v1/urls.php";
  * handle coming request via Route component
  */
 use Components\Route;
+use CustomExceptions\ValidationException;
+
+$response = [];
+
 try {
-    echo Route::handleRequest();
+    $response = Route::handleRequest();
+
+} catch (ValidationException $e) {
+    // this should always to be handled, is client not server issue.
+    $response = [
+        'error' => $e->getMessage(),
+        'status_code' => $e->getCode()
+    ];
+
 } catch (Exception $e) {
     // check if we in debug mode first, so we can clear what exactly the exception is.
     $debugModeIsActive = (($_ENV['DEBUG_MODE'] ?? "false") == "true");
 
-    $exceptionResponse = [
+    $response = [
         "error" => "Internal server error.",
         "status_code" => \Constants\StatusCodes::INTERNAL_ERROR
     ];
 
     if($debugModeIsActive) {
-        $exceptionResponse['error'] = $e->getMessage();
+        $response['error'] = $e->getMessage();
     }
 
-    echo json_encode($exceptionResponse);
+} finally {
+    http_response_code($response['status_code']);
+    echo json_encode($response);
 }

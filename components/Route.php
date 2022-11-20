@@ -134,8 +134,6 @@ class Route
             $response = (new $controller())->$handler(... $params);
         }
 
-        http_response_code($response['status_code']);
-
-        return json_encode($response);
+        return $response;
     }
 }
