@@ -4,6 +4,25 @@ namespace Helpers;
 class RequestHelper
 {
     /**
+     * ?param=value&... into ['param' => 'value', ...]
+     * @return array
+     */
+    public static function getQueryParams(): array
+    {
+        return $_GET;
+    }
+
+    /**
+     * Get raw data sent from client as payload in json format.
+     * @return array
+     */
+    public static function getRequestPayload(): array
+    {
+        $dataInJsonFormat = file_get_contents('php://input');
+        return json_decode($dataInJsonFormat, true);
+    }
+
+    /**
      * Standard request uri should have one question mark (?) that split between uri & query params.
      * @param $uri
      * @return string
@@ -30,4 +49,5 @@ class RequestHelper
     {
         return array_slice(explode('/', $uri), 2);
     }
+
 }
