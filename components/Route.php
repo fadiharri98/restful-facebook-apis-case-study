@@ -3,6 +3,7 @@ namespace Components;
 
 use Exception;
 use Constants\StatusCodes;
+use Helpers\RequestHelper;
 
 class Route
 {
@@ -100,7 +101,11 @@ class Route
 
     public static function handleRequest()
     {
-        $request_url_parts = array_slice(explode('/', $_SERVER['REQUEST_URI']), 2);
+        $uri = $_SERVER['REQUEST_URI'];
+        $request_url_parts =
+            RequestHelper::splittingUriPath(
+                RequestHelper::getUriWithoutQueryParams($uri)
+            );
         $request_method = $_SERVER['REQUEST_METHOD'];
 
         $url_params = self::mapUrlWithParams($request_url_parts);
