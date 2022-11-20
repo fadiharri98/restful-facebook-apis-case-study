@@ -1,7 +1,7 @@
 <?php
 namespace Constants;
 
-class RequestVerbs
+class RequestVerbs extends BaseConstant
 {
     CONST GET = 'GET';
     CONST POST = 'POST';

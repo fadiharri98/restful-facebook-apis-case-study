@@ -1,7 +1,7 @@
 <?php
 namespace Constants;
 
-class StatusCodes
+class StatusCodes extends BaseConstant
 {
     // 200
     const SUCCESS = 200;
