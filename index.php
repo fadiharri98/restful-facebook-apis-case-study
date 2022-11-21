@@ -1,14 +1,9 @@
 <?php
-require 'vendor/autoload.php';
 
-/*
- * use Dotenv &
- * load environment variables.
- * use `$_ENV` to access variables.
- * (safeLoad) to skip exceptions if `.env` not exist
+/**
+ * boostrap all project dependencies
  */
-use Dotenv\Dotenv;
-Dotenv::createImmutable(__DIR__)->safeLoad();
+require_once 'bootstrap.php';
 
 /*
  * define response to be always in JSON format (RESTFUL-API)
