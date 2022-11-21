@@ -1,6 +1,7 @@
 {
   "require": {
-    "vlucas/phpdotenv": "^5.5"
+    "vlucas/phpdotenv": "^5.5",
+    "illuminate/database": "^8.83"
   },
   "autoload": {
     "psr-4": {
@@ -8,7 +9,13 @@
       "Constants\\": "constants/",
       "Controllers\\": "controllers/",
       "CustomExceptions\\": "exceptions/",
-      "Helpers\\": "helpers/"
+      "Helpers\\": "helpers/",
+      "Models\\": "models"
     }
+  },
+  "scripts": {
+    "migrate": [
+      "@php database/migration.script.php"
+    ]
   }
 }
