@@ -35,7 +35,7 @@ try {
     // this should always to be handled, is client not server issue.
     $response = [
         'error' => $e->getMessage(),
-        'status_code' => $e->getCode()
+        'status_code' => \Constants\StatusCodes::VALIDATION_ERROR
     ];
 
 } catch (Exception $e) {
