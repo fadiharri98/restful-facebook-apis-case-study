@@ -20,16 +20,27 @@ require_once "routes/v1/urls.php";
  */
 use Components\Route;
 use CustomExceptions\ValidationException;
+use CustomExceptions\ResourceNotFoundException;
 
 $response = [];
 
 try {
     $response = Route::handleRequest();
 
+} catch (ResourceNotFoundException $e) {
+    $response = [
+        'data' => [
+            'message' => $e->getMessage()
+        ],
+        'status_code' => \Constants\StatusCodes::NOT_FOUND
+    ];
+
 } catch (ValidationException $e) {
     // this should always to be handled, is client not server issue.
     $response = [
-        'error' => $e->getMessage(),
+        'data' => [
+            'validation_error' => $e->getMessage()
+        ],
         'status_code' => \Constants\StatusCodes::VALIDATION_ERROR
     ];
 
