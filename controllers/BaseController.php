@@ -78,13 +78,21 @@ abstract class BaseController
         if (key_exists('query', $handler_validation))
         {
             $queryParams = RequestHelper::getQueryParams();
-            $this->validationComponent->validateQueryParams($handler_validation['query'], $queryParams);
+            $this->validationComponent->validateQueryParams(
+                $handler_validation['query'],
+                $queryParams,
+                ($arguments ? end($arguments) : null)
+            );
         }
 
         if (key_exists('payload', $handler_validation))
         {
             $payload = RequestHelper::getRequestPayload();
-            $this->validationComponent->validateRequestPayload($handler_validation['payload'], $payload);
+            $this->validationComponent->validateRequestPayload(
+                $handler_validation['payload'],
+                $payload,
+                ($arguments ? end($arguments) : null)
+            );
         }
 
         $response = $this->$handler(...$arguments);

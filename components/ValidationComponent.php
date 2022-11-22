@@ -5,6 +5,7 @@ namespace Components;
 use Constants\Rules;
 use Exception;
 use CustomExceptions\ValidationException;
+use Illuminate\Database\Eloquent\Model;
 
 class ValidationComponent
 {
@@ -16,43 +17,43 @@ class ValidationComponent
      */
     private array $rules;
 
+    private $resource_id;
+
     public function __construct()
     {
         $this->rules = (new Rules())->list();
     }
 
     /**
-     * @param array $schema
-     * @param array $values
-     * @param boolean $level
-     * @param boolean $rule_is_list
-     * @return void
      * @throws Exception if there is unimplemented rule
      * @throws Exception if one of the rule isn't listed in constants.Rules
      * @throws ValidationException if one of the registered rules is failed
      */
 
-    private function validate($schema, $values, $level, $rule_is_list=true): void
+    private function validate($schema, $values, $level, $values_are_positional=false): void
     {
         foreach ($schema as $key => $rules)
         {
-            if (!$rule_is_list && is_array($rules))
-            {
-                throw new Exception("`$key` rule can't be an array.");
-            }
-            elseif ($rule_is_list && ! is_array($rules))
+            if (! is_array($rules))
             {
                 throw new Exception("`$key` validation should be array of rules.");
             }
 
-            if(!$rule_is_list && ! is_array($rules))
+            foreach ($rules as $index => $rule)
             {
-                // to adapt with the following logic in this case
-                $rules = [$rules];
-            }
+                /**
+                 * handle special rule like 'unique'
+                 * when rule has extra details
+                 * the rule will be stored as associated array
+                 * then the key will be the rule
+                 * the value will be the rule details
+                 */
+                if (! is_numeric($index))
+                {
+                    $rule_details = $rule;
+                    $rule = $index;
+                }
 
-            foreach ($rules as $rule)
-            {
                 if(! in_array($rule, $this->rules))
                 {
                     throw new Exception("this rule ($rule) isn't listed in constants.Rules.");
@@ -61,17 +62,21 @@ class ValidationComponent
                 $rule = $this->handleRuleConvention($rule);
                 $this->validateIfRuleIsExists($rule);
 
-                if (! $rule_is_list) {
+                if ($values_are_positional) {
                     $value = array_shift($values);
                 }
                 else {
                     $value = $values[$key] ?? null;
                 }
 
-                $this->$rule(
-                    $value,
-                    "$key ($level)"
-                );
+                $arguments = [$value, $key, $level];
+
+                if (isset($rule_details))
+                {
+                    $arguments[] = $rule_details;
+                }
+
+                $this->$rule(...$arguments);
             }
         }
 
@@ -79,46 +84,47 @@ class ValidationComponent
 
     /**
      * rules in `$urlParamsValidationSchema` should be ordered according the passed `$url_params` to handle correct.
-     * @param array $validationSchema
-     * @param array $values
-     * @return void
      * @throws Exception if they are unimplemented rule
      * @throws Exception if one of the rule isn't listed in constants.Rules
      * @throws ValidationException if one of the registered rules is failed
      */
     public function validateUrlParams(array $validationSchema, array $values): void
     {
-        $this->validate($validationSchema, $values, "url params", false);
+        if ($values) {
+            $this->resource_id = end($values);
+        }
+
+        $this->validate($validationSchema, $values, "url params", true);
     }
 
     /**
-     * @param array $validationSchema
-     * @param array $values
-     * @return void
      * @throws Exception if they are unimplemented rule
      * @throws Exception if one of the rule isn't listed in constants.Rules
      * @throws ValidationException if one of the registered rules is failed
      */
-    public function validateQueryParams(array $validationSchema, array $values): void
+    public function validateQueryParams(array $validationSchema, array $values, $resource_id=null): void
     {
+        if ($resource_id) {
+            $this->resource_id = $resource_id;
+        }
+
         $this->validate($validationSchema, $values, "query params");
     }
 
     /**
-     * @param array $validationSchema
-     * @param array $values
-     * @return void
      * @throws Exception if they are unimplemented rule
      * @throws ValidationException if one of the registered rules is failed
      */
-    public function validateRequestPayload(array $validationSchema, array $values): void
+    public function validateRequestPayload(array $validationSchema, array $values, $resource_id=null): void
     {
+        if ($resource_id) {
+            $this->resource_id = $resource_id;
+        }
+
         $this->validate($validationSchema, $values, "request payload");
     }
 
     /**
-     * @param $rule
-     * @return void
      * @throws Exception if rule hasn't implementation.
      */
     private function validateIfRuleIsExists($rule): void
@@ -133,8 +139,6 @@ class ValidationComponent
     }
 
     /**
-     * @param $rule
-     * @return string
      * @throws Exception if $rule doesn't start with 'validate_rule_'
      */
     private function handleRuleConvention($rule): string
@@ -155,82 +159,141 @@ class ValidationComponent
     }
 
     /**
-     * @param $value
-     * @param $param_name
      * @throws ValidationException if rule is failed.
      */
-    private function validate_rule_required($value, $param_name): void
+    private function validate_rule_required($value, $param, $level): void
     {
         if ($value === null)
         {
-            throw new ValidationException("$param_name is required.");
+            throw new ValidationException("$param ($level) is required.");
         }
     }
 
     /**
-     * @param $value
-     * @param $param_name
      * @throws ValidationException if rule is failed.
      */
-    private function validate_rule_integer($value, $param_name): void
+    private function validate_rule_integer($value, $param, $level): void
     {
-        if (! ctype_digit($value))
+        if ($value && ! ctype_digit($value))
         {
-            throw new ValidationException("$param_name should be an integer.");
+            throw new ValidationException("$param ($level) should be an integer.");
         }
     }
 
     /**
-     * @param $value
-     * @param $param_name
      * @throws ValidationException if rule is failed.
      */
-    private function validate_rule_string($value, $param_name): void
+    private function validate_rule_string($value, $param, $level): void
     {
         if ($value && (is_numeric($value) || in_array($value, ["true", "false"]) || gettype($value) != "string"))
         {
-            throw new ValidationException("$param_name should be string.");
+            throw new ValidationException("$param ($level) should be string.");
         }
     }
 
     /**
-     * @param $value
-     * @param $param_name
      * @throws ValidationException if rule is failed.
      */
-    private function validate_rule_string_not_empty($value, $param_name): void
+    private function validate_rule_string_not_empty($value, $param, $level): void
     {
-        if (! $value)
+        if ($value === "")
         {
-            throw new ValidationException("$param_name should not be empty.");
+            throw new ValidationException("$param ($level) should not be empty.");
         }
 
-        $this->validate_rule_string($value, $param_name);
+        $this->validate_rule_string($value, $param, $level);
     }
 
     /**
-     * @param $value
-     * @param $param_name
      * @throws ValidationException if rule is failed.
      */
-    private function validate_rule_boolean($value, $param_name): void
+    private function validate_rule_boolean($value, $param, $level): void
     {
         if ($value && gettype($value) != "boolean")
         {
-            throw new ValidationException("$param_name should be boolean.");
+            throw new ValidationException("$param ($level) should be boolean.");
         }
     }
+
     /**
-     * @param $value
-     * @param $param_name
      * @throws ValidationException if rule is failed.
      */
-    private function validate_rule_email($value, $param_name): void
+    private function validate_rule_email($value, $param, $level): void
     {
         if ($value && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
-            throw new ValidationException("$param_name invalid email format.");
+            throw new ValidationException("$param ($level) invalid email format.");
         }
 
     }
 
+    /**
+     * @throws Exception if `resource` not passed with values.
+     * @throws ValidationException if rule is failed.
+     */
+    private function validate_rule_unique($value, $param, $level, $rule_details): void
+    {
+        if (! key_exists('resource', $rule_details)) {
+            throw new Exception("the 'resource' is required with `unique` rule.");
+        }
+        elseif (! $param && ! key_exists('field', $rule_details)) {
+            throw new Exception("the 'field' is required with `unique` rule.");
+        }
+
+        if(! $value)
+        {
+            return;
+        }
+
+        $field = $rule_details['field'] ?? $param;
+
+        /**
+         * @var Model $resource
+         */
+        $resource = $rule_details['resource'];
+
+        $query =
+            $resource::query()
+                ->where($field, $value);
+
+        if ($this->resource_id)
+        {
+            $query->where('id', '!=', $this->resource_id);
+        }
+
+        if ($query->count() >= 1) {
+            throw new ValidationException("'$value' as $param isn't unique ($level).");
+        }
+    }
+
+    /**
+     * Not working with parent resource!
+     * @throws Exception if `resource` not passed with values.
+     * @throws ValidationException if rule is failed.
+     */
+    private function validate_rule_exists($value, $param, $level, $rule_details): void
+    {
+        if (! key_exists('resource', $rule_details)) {
+            throw new Exception("the 'resource' is required with `unique` rule.");
+        }
+
+        if(! $this->resource_id)
+        {
+            return;
+        }
+
+        /**
+         * @var Model $resource
+         */
+        $resource = $rule_details['resource'];
+
+        $existed =
+            $resource::query()
+                ->where('id', $this->resource_id)
+                ->exists();
+
+
+        if (! $existed) {
+            throw new ValidationException("$param ($level) isn't exist.");
+        }
+    }
 }

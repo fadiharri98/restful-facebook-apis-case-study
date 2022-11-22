@@ -10,6 +10,8 @@ class Rules extends BaseConstant
     const STRING = 'string';
     const BOOLEAN = 'boolean';
     const EMAIL = 'email';
+    const UNIQUE = 'unique';
+    const EXISTS = 'exists';
     const MAX = 'MAX';
     const MIN = 'MIN';
     const LENGTH = 'length';
