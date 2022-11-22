@@ -15,11 +15,23 @@ class RequestHelper
     /**
      * Get raw data sent from client as payload in json format.
      * @return array
+     * @throws \Exception if request Payload isn't valid JSON
      */
     public static function getRequestPayload(): array
     {
         $dataInJsonFormat = file_get_contents('php://input');
-        return json_decode($dataInJsonFormat, true);
+
+        if (! $dataInJsonFormat)
+        {
+            return [];
+        }
+
+        if (! is_array($payload = json_decode($dataInJsonFormat, true)))
+        {
+            throw new \Exception("request payload isn't valid JSON.");
+        }
+
+        return $payload;
     }
 
     /**
