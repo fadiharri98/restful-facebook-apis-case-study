@@ -5,6 +5,7 @@ class StatusCodes extends BaseConstant
 {
     // 200
     const SUCCESS = 200;
+    const CREATED = 201;
     // 300
     const REDIRECT = 301;
     // 400
