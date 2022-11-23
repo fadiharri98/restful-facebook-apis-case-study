@@ -175,7 +175,7 @@ class ValidationComponent
      */
     private function validate_rule_integer($value, $param, $level): void
     {
-        if ($value && ! ctype_digit("$value"))
+        if ($value !== null && ! ctype_digit("$value"))
         {
             throw new ValidationException("$param ($level) should be an integer.");
         }
@@ -186,7 +186,7 @@ class ValidationComponent
      */
     private function validate_rule_string($value, $param, $level): void
     {
-        if ($value && gettype($value) != "string")
+        if ($value !== null && gettype($value) != "string")
         {
             throw new ValidationException("$param ($level) should be string.");
         }
@@ -210,8 +210,8 @@ class ValidationComponent
      */
     private function validate_rule_boolean($value, $param, $level): void
     {
-        if ($value != null && gettype($value) != "boolean" &&
-            ! in_array($value, ["true", "True", "false", "False"]))
+        if ($value !== null && gettype($value) != "boolean" &&
+            ! in_array("$value", ["true", "True", "false", "False"]))
         {
             throw new ValidationException("$param ($level) should be boolean.");
         }
@@ -222,7 +222,7 @@ class ValidationComponent
      */
     private function validate_rule_email($value, $param, $level): void
     {
-        if ($value && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
+        if ($value !== null && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
             throw new ValidationException("$param ($level) invalid email format.");
         }
 
@@ -241,7 +241,7 @@ class ValidationComponent
             throw new Exception("the 'field' is required with `unique` rule.");
         }
 
-        if(! $value)
+        if($value === null)
         {
             return;
         }
