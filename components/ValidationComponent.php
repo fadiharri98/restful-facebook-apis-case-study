@@ -59,7 +59,7 @@ class ValidationComponent
                     throw new Exception("this rule ($rule) isn't listed in constants.Rules.");
                 }
 
-                $rule = $this->handleRuleConvention($rule);
+                $rule = $this->handleRuleCallConvention($rule);
                 $this->validateIfRuleIsExists($rule);
 
                 if ($values_are_positional) {
@@ -129,7 +129,7 @@ class ValidationComponent
      */
     private function validateIfRuleIsExists($rule): void
     {
-        $rule = $this->handleRuleConvention($rule);
+        $rule = $this->handleRuleCallConvention($rule);
 
         if (! method_exists($this, $rule))
         {
@@ -139,23 +139,24 @@ class ValidationComponent
     }
 
     /**
-     * @throws Exception if $rule doesn't start with 'validate_rule_'
+     * Standard convention is -> validate_rule_.*
      */
-    private function handleRuleConvention($rule): string
+    private function handleRuleCallConvention($rule): string
     {
-        $missing_prefix = "";
+        $convention = explode('_', $rule);
 
-        if (! str_contains($rule, 'validate_'))
+        if (! in_array('validate', $convention))
         {
-            $missing_prefix = 'validate_';
+            $convention = ['validate', ...$convention];
         }
 
-        if (! str_contains($rule, 'rule_'))
+        if (! in_array('rule', $convention))
         {
-            $missing_prefix .= 'rule_';
+            $convention = [$convention[0], 'rule', ...array_slice($convention, 1)];
         }
 
-        return $missing_prefix . $rule;
+
+        return join("_", $convention);
     }
 
     /**
@@ -174,7 +175,7 @@ class ValidationComponent
      */
     private function validate_rule_integer($value, $param, $level): void
     {
-        if ($value && ! ctype_digit($value))
+        if ($value && ! ctype_digit("$value"))
         {
             throw new ValidationException("$param ($level) should be an integer.");
         }
@@ -185,7 +186,7 @@ class ValidationComponent
      */
     private function validate_rule_string($value, $param, $level): void
     {
-        if ($value && (is_numeric($value) || in_array($value, ["true", "false"]) || gettype($value) != "string"))
+        if ($value && gettype($value) != "string")
         {
             throw new ValidationException("$param ($level) should be string.");
         }
@@ -209,7 +210,8 @@ class ValidationComponent
      */
     private function validate_rule_boolean($value, $param, $level): void
     {
-        if ($value && gettype($value) != "boolean")
+        if ($value != null && gettype($value) != "boolean" &&
+            ! in_array($value, ["true", "True", "false", "False"]))
         {
             throw new ValidationException("$param ($level) should be boolean.");
         }
