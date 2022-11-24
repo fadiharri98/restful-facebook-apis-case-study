@@ -8,6 +8,7 @@ use CustomExceptions\ResourceNotFoundException;
 use Helpers\RequestHelper;
 use Helpers\ResourceHelper;
 use Models\User;
+use Serializers\UserSerializer;
 
 class UserController extends BaseController
 {
@@ -42,7 +43,7 @@ class UserController extends BaseController
                     ],
                 ],
                 'password' => [Rules::REQUIRED, Rules::STRING],
-                'profile_img' => [Rules::STRING],
+                'profile_img' => [Rules::STRING, Rules::NOT_EMPTY],
             ]
         ],
         "update" => [
@@ -78,9 +79,10 @@ class UserController extends BaseController
     {
         $user = ResourceHelper::findResource(User::class, $user_id);
 
+        $serializer = new UserSerializer($user);
+
         return [
-            'data' => $user,
-            'status_code' => StatusCodes::SUCCESS
+            'data' => $serializer->serialize(),
         ];
     }
 
@@ -89,18 +91,12 @@ class UserController extends BaseController
         $perPage = $_GET['limit'] ?? 15;
         $currentPage = $_GET['page'] ?? 1;
 
-        $paginateUsers = User::query()->paginate($perPage, ['*'], 'page', $currentPage);
+        $serializer =
+            new UserSerializer(
+                User::query()->paginate($perPage, ['*'], 'page', $currentPage)
+            );
 
-        return [
-            'data' => $paginateUsers->items(),
-            'pagination' => [
-                "current_page" => $paginateUsers->currentPage(),
-                "per_page" => $paginateUsers->perPage(),
-                "last_page" => $paginateUsers->lastPage(),
-                "total" => $paginateUsers->total()
-            ],
-            'status_code' => StatusCodes::SUCCESS
-        ];
+        return $serializer->paginatorSerialize();
     }
 
     protected function create()
