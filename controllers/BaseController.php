@@ -3,6 +3,7 @@ namespace Controllers;
 
 use Components\ValidationComponent;
 use Constants\RequestVerbs;
+use Constants\StatusCodes;
 use Exception;
 use Helpers\RequestHelper;
 
@@ -100,10 +101,15 @@ abstract class BaseController
         /**
          * validation: response should always has `data` & `status_code`
          */
-        if (! array_key_exists('data', $response) || ! array_key_exists('status_code', $response))
+        if (! array_key_exists('data', $response))
         {
             throw new Exception(
-                "data in response should be in `data` key & status code in `status_code` key.");
+                "data in response should be in `data` key.");
+        }
+
+        if(! array_key_exists('status_code', $response))
+        {
+            $response['status_code'] = StatusCodes::SUCCESS;
         }
 
         return $response;
