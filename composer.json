@@ -11,7 +11,8 @@
       "Controllers\\": "controllers/",
       "CustomExceptions\\": "exceptions/",
       "Helpers\\": "helpers/",
-      "Models\\": "models"
+      "Models\\": "models/",
+      "Serializers\\": "serializers/"
     }
   },
   "scripts": {
