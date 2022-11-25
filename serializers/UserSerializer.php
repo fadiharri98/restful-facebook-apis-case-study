@@ -33,7 +33,7 @@ class UserSerializer extends BaseSerializer
     public function toArray()
     {
         return [
-            'profile_img' => $this->model->profile_img ?: 'https://fadi.png'//"https://default.png"
+            'profile_img' => $this->model->profile_img ?: 'https://default.jpg'
          ];
     }
 
