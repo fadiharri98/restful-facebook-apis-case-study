@@ -30,12 +30,11 @@ class UserSerializer extends BaseSerializer
         ];
     }
 
-    public function serialize($fields_only = [])
+    public function toArray()
     {
-        $items = parent::serialize($fields_only);
-
-        $items['profile_img'] = $items['profile_img'] ?: "https://default.png";
-
-        return $items;
+        return [
+            'profile_img' => $this->model->profile_img ?: 'https://fadi.png'//"https://default.png"
+         ];
     }
+
 }

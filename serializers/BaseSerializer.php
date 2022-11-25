@@ -96,6 +96,14 @@ abstract class BaseSerializer
     }
 
     /**
+     * @return array
+     */
+    protected function toArray()
+    {
+        return [];
+    }
+
+    /**
      * @return array{}
      * @throws Exception when try to access un-existing serializer class
      */
@@ -107,8 +115,16 @@ abstract class BaseSerializer
         }
 
         $serializedData = [];
+        $customSerializedData = $this->toArray();
+
         foreach ($fields_only as $field)
         {
+            if(key_exists($field, $customSerializedData))
+            {
+                $serializedData[$field] = $customSerializedData[$field];
+                continue;
+            }
+
             /**
              * serialized relation like 'model:field1,field2,..'
              * support serialize relations just for one level
