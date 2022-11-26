@@ -4,10 +4,14 @@ namespace Helpers;
 
 use CustomExceptions\ResourceNotFoundException;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 
 class ResourceHelper
 {
     /**
+     * @return Model
      * @throws ResourceNotFoundException if no match resource by id
      */
     public static function findResource($model, $resource_id, $with=[], $resource_name=null)
@@ -31,5 +35,50 @@ class ResourceHelper
         }
 
         return $resource;
+    }
+
+    /**
+     * @return LengthAwarePaginator|Collection
+     */
+    public static function getResources($model, $filters=[], $with=[], $paginated=false)
+    {
+        /**
+         * @var Builder $query
+         */
+        $query = $model::query();
+
+        foreach ($filters as $column => $filter)
+        {
+            if (key_exists('operator', $filter)) {
+
+                $query->where($column, $filter['operator'], $filter['value']);
+                continue;
+            }
+
+            $query->where($column, $filter['value']);
+        }
+
+        if (is_array($with) && ! empty($with))
+        {
+            $query->with($with);
+        }
+
+        if ($paginated)
+        {
+            $perPage = $_GET['limit'] ?? 15;
+            $currentPage = $_GET['page'] ?? 1;
+
+            return $query->paginate($perPage, ['*'], 'page', $currentPage);
+        }
+
+        return $query->get();
+    }
+
+    /**
+     * @return LengthAwarePaginator
+     */
+    public static function getResourcesPaginated($model, $filters=[], $with=[])
+    {
+        return self::getResources($model, $filters, $with, true);
     }
 }
