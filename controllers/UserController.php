@@ -88,12 +88,9 @@ class UserController extends BaseController
 
     protected function index()
     {
-        $perPage = $_GET['limit'] ?? 15;
-        $currentPage = $_GET['page'] ?? 1;
-
         $serializer =
             new UserSerializer(
-                User::query()->paginate($perPage, ['*'], 'page', $currentPage)
+                ResourceHelper::getResourcesPaginated(User::class)
             );
 
         return $serializer->paginatorSerialize();
@@ -151,4 +148,5 @@ class UserController extends BaseController
             'status_code' => StatusCodes::SUCCESS
         ];
     }
+
 }
