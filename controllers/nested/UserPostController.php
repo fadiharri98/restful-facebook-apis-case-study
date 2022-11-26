@@ -1,8 +1,9 @@
 <?php
 
-namespace Controllers;
+namespace Nested\Controllers;
 
 use Constants\Rules;
+use Controllers\BaseController;
 use Helpers\ResourceHelper;
 use Models\Post;
 use Models\User;
