@@ -3,15 +3,26 @@
 namespace Helpers;
 
 use CustomExceptions\ResourceNotFoundException;
+use Illuminate\Database\Eloquent\Builder;
 
 class ResourceHelper
 {
     /**
      * @throws ResourceNotFoundException if no match resource by id
      */
-    public static function findResource($model, $resource_id, $resource_name=null)
+    public static function findResource($model, $resource_id, $with=[], $resource_name=null)
     {
-        $resource = $model::query()->find($resource_id);
+        /**
+         * @var Builder $query
+         */
+        $query = $model::query();
+
+        if($with)
+        {
+            $query = $query->with($with);
+        }
+
+        $resource = $query->find($resource_id);
 
         if(! $resource)
         {
