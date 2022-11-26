@@ -21,6 +21,18 @@ abstract class BaseSerializer
     protected $models;
 
     /**
+     * @var array $mapRelationSerializer
+     * map relation with arbitrary serializer
+     */
+    protected $mapRelationSerializer = [];
+
+    /**
+     * @var array $mapFieldWithCustomName
+     * when
+     */
+    protected $mapFieldWithCustomName = [];
+
+    /**
      * @param Model|Model[] $resource
      * @throws Exception
      */
@@ -86,11 +98,13 @@ abstract class BaseSerializer
         $name = str_replace("Serializers", "", $name);
         $name = str_replace("Serializer", "", $name);
 
+        $singular_name = Str::singular($name);
+
         return
             sprintf(
                 "%s%s%s",
                 "Serializers\\",
-                ucfirst(Str::singular($name)),
+                ucfirst(Str::camel($singular_name)),
                 "Serializer"
             );
     }
@@ -114,14 +128,21 @@ abstract class BaseSerializer
            $fields_only = $this->getSerializationFields();
         }
 
-        $serializedData = [];
-        $customSerializedData = $this->toArray();
+        $serialized_data = $this->toArray();
 
         foreach ($fields_only as $field)
         {
-            if(key_exists($field, $customSerializedData))
+            $field_name = $this->mapFieldWithCustomName[$field] ?? $field;
+
+            if(key_exists($field, $serialized_data))
             {
-                $serializedData[$field] = $customSerializedData[$field];
+                if ($field_name != $field)
+                {
+                    // set value in new field name
+                    $serialized_data[$field_name] = $serialized_data[$field];
+                    unset($serialized_data[$field]);
+                }
+
                 continue;
             }
 
@@ -147,7 +168,13 @@ abstract class BaseSerializer
                     /**
                      * @var BaseSerializer $_serializer
                      */
-                    $_serializer = $this->handleSerializerClassConvention($_relation);
+                    if (key_exists($_relation, $this->mapRelationSerializer)) {
+
+                        $_serializer = $this->mapRelationSerializer[$_relation];
+                    } else {
+
+                        $_serializer = $this->handleSerializerClassConvention($_relation);
+                    }
 
                     if (! class_exists($_serializer)) {
 
@@ -162,22 +189,22 @@ abstract class BaseSerializer
 
                     if ($_models instanceof Collection) {
 
-                        $serializedData[$_relation] =
+                        $serialized_data[$_relation] =
                             (new $_serializer($_models))->serializeMany($_fields);
                     } else {
 
-                        $serializedData[$_relation] =
+                        $serialized_data[$_relation] =
                             (new $_serializer($_model))->serialize($_fields);
                     }
                 }
 
             } else {
 
-                $serializedData[$field] = $this->model->$field;
+                $serialized_data[$field_name] = $this->model->$field;
             }
         }
 
-        return $serializedData;
+        return $serialized_data;
     }
 
     /**
