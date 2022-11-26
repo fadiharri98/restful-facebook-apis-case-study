@@ -89,6 +89,21 @@ abstract class BaseSerializer
      */
     public abstract function getSerializationFields();
 
+    protected function fillData($serialize_only)
+    {
+        $data = $this->toArray();
+
+        foreach ($data as $key => $value)
+        {
+            if (! in_array($key, $serialize_only) && key_exists($key, $data))
+            {
+                unset($data[$key]);
+            }
+        }
+
+        return $data;
+    }
+
     /**
      * @return string
      */
@@ -121,22 +136,22 @@ abstract class BaseSerializer
      * @return array{}
      * @throws Exception when try to access un-existing serializer class
      */
-    public function serialize($fields_only=[])
+    public function serialize($serialize_only=[])
     {
-        if (! $fields_only)
+        if (! $serialize_only)
         {
-           $fields_only = $this->getSerializationFields();
+           $serialize_only = $this->getSerializationFields();
         }
 
-        $serialized_data = $this->toArray();
+        $serialized_data = $this->fillData($serialize_only);
 
-        foreach ($fields_only as $field)
+        foreach ($serialize_only as $field)
         {
             $field_name = $this->mapFieldWithCustomName[$field] ?? $field;
 
             if(key_exists($field, $serialized_data))
             {
-                if ($field_name != $field)
+                if ($field_name != $field   )
                 {
                     // set value in new field name
                     $serialized_data[$field_name] = $serialized_data[$field];
@@ -156,7 +171,7 @@ abstract class BaseSerializer
                 $_relation = array_shift($_);
 
                 $_ = array_shift($_);
-                $_fields = explode(',', $_);
+                $_fields = $_ ? explode(',', $_) : [];
 
                 /**
                  * @var Model $_relation
@@ -209,15 +224,21 @@ abstract class BaseSerializer
 
     /**
      * @return array
+     * @throws Exception if models not filled
      */
-    public function serializeMany($fields_only=[])
+    public function serializeMany($serialize_only=[])
     {
         $items = [];
+
+        if (!$this->models)
+        {
+            throw new Exception("The Serializer hasn't a collection of model.");
+        }
 
         foreach ($this->models as $model)
         {
             $this->model = $model;
-            $items[] = $this->serialize($fields_only);
+            $items[] = $this->serialize($serialize_only);
         }
 
         // reset value
@@ -230,7 +251,7 @@ abstract class BaseSerializer
      * @return array
      * @throws Exception if registered model property isn't instance of LengthAwarePaginator
      */
-    public function paginatorSerialize($fields_only=[])
+    public function paginatorSerialize($serialize_only=[])
     {
         if (! $this->models instanceof LengthAwarePaginator)
         {
@@ -243,7 +264,7 @@ abstract class BaseSerializer
         $paginator = $this->models;
 
         return [
-            'data' => $this->serializeMany($fields_only),
+            'data' => $this->serializeMany($serialize_only),
             'pagination' => [
                 "current_page" => $paginator->currentPage(),
                 "per_page" => $paginator->perPage(),
