@@ -7,7 +7,7 @@
 use Components\Route;
 
 use Controllers\UserController;
-use Controllers\UserPostController;
+use Nested\Controllers\UserPostController;
 use Controllers\PostController;
 
 $api_v1 = "api/v1";
