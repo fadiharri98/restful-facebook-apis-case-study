@@ -27,6 +27,11 @@ $response = [];
 try {
     $response = Route::handleRequest();
 
+    if ($_ENV['GET_LOGGED_QUERIES'] == 'true') {
+
+        $response['sql_queries'] = Manager::getQueryLog();
+    }
+
 } catch (ResourceNotFoundException $e) {
     $response = [
         'data' => [

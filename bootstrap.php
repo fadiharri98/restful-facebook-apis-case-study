@@ -17,7 +17,9 @@ Dotenv::createImmutable(__DIR__)->safeLoad();
 /**
  * Bootstrapping Eloquent (ORM)
  */
-$capsule = new Illuminate\Database\Capsule\Manager;
+use Illuminate\Database\Capsule\Manager;
+
+$capsule = new Manager;
 $capsule->addConnection([
     'driver' => $_ENV['DATABASE_DRIVER'],
     'host' => $_ENV['DATABASE_HOST'],
@@ -27,4 +29,6 @@ $capsule->addConnection([
 ]);
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
+
+Manager::enableQueryLog();
 
