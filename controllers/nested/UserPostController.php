@@ -25,7 +25,8 @@ class UserPostController extends BaseController
 
     protected function index($user_id)
     {
-        $user = ResourceHelper::findResource(User::class, $user_id);
+        $user =
+            ResourceHelper::findResource(User::class, $user_id);
 
         $filters = [
             'user_id' => [
@@ -34,7 +35,11 @@ class UserPostController extends BaseController
         ];
 
         $user_posts =
-            ResourceHelper::getResourcesPaginated(Post::class, $filters);
+            ResourceHelper::getResourcesPaginated(
+                Post::class,
+                $filters,
+                ['publisher_user', 'comments', 'comments.user', 'likes']
+            );
 
         $serializer = new PostSerializer($user_posts);
 
