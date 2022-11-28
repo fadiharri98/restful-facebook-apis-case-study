@@ -9,6 +9,7 @@ use Helpers\ResourceHelper;
 use Models\Comment;
 use Models\Post;
 use Models\User;
+use Serializers\CommentSerializer;
 
 class PostCommentController extends BaseController
 {
@@ -23,6 +24,24 @@ class PostCommentController extends BaseController
             ]
         ]
     ];
+
+    public function index($post_id)
+    {
+        $comments =
+            ResourceHelper::getResourcesPaginated(
+                Comment::class,
+                [
+                    'post_id' => [
+                        'value' => $post_id
+                    ]
+                ],
+                ['user:id,name,profile_img']
+            );
+
+        $serializer = new CommentSerializer($comments);
+
+        return $serializer->paginatorSerialize();
+    }
 
     public function create($post_id)
     {
