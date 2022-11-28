@@ -7,6 +7,7 @@ use CustomExceptions\ValidationException;
 use Helpers\RequestHelper;
 use Helpers\ResourceHelper;
 use Illuminate\Database\QueryException;
+use Mixins\AuthenticationMixin;
 use Models\Like;
 use Models\Post;
 use Models\User;
@@ -14,6 +15,8 @@ use Serializers\PostSerializer;
 
 class PostController extends BaseController
 {
+    use AuthenticationMixin;
+
     protected array $validationSchema = [
         'update' => [
             'url' => [
