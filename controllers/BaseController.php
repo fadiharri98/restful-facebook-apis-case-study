@@ -25,6 +25,16 @@ abstract class BaseController
     protected ValidationComponent $validationComponent;
 
     /**
+     * Contains the URL query params as an associative array when handling registered route.
+     * @var array $queryParams
+     */
+    protected $queryParams;
+    /**
+     * Contains the request payload as an associative array when handling registered route.
+     * @var array $payload
+     */
+    protected $payload;
+    /**
      * register rules for each handler in 3 levels -> url, query, and payload
      * supported rules are listed in constants.Rules
      * schema structure
@@ -78,7 +88,7 @@ abstract class BaseController
 
         if (key_exists('query', $handler_validation))
         {
-            $queryParams = RequestHelper::getQueryParams();
+            $this->queryParams = $queryParams = RequestHelper::getQueryParams();
             $this->validationComponent->validateQueryParams(
                 $handler_validation['query'],
                 $queryParams,
@@ -88,7 +98,7 @@ abstract class BaseController
 
         if (key_exists('payload', $handler_validation))
         {
-            $payload = RequestHelper::getRequestPayload();
+            $this->payload = $payload = RequestHelper::getRequestPayload();
             $this->validationComponent->validateRequestPayload(
                 $handler_validation['payload'],
                 $payload,
