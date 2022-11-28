@@ -7,8 +7,11 @@
 use Components\Route;
 
 use Controllers\UserController;
-use Nested\Controllers\UserPostController;
 use Controllers\PostController;
+use Controllers\CommentController;
+
+use Nested\Controllers\UserPostController;
+use Nested\Controllers\PostCommentController;
 
 $api_v1 = "api/v1";
 
@@ -28,4 +31,7 @@ Route::POST("$api_v1/users/{user_id}/posts", UserPostController::class);
 Route::POST("$api_v1/posts/{post_id}/like", PostController::class, "likesPost");
 Route::POST("$api_v1/posts/{post_id}/unlike", PostController::class, "unlikesPost");
 
+Route::POST("$api_v1/posts/{post_id}/comments", PostCommentController::class);
 
+Route::PUT("$api_v1/comments/{comment_id}", CommentController::class);
+Route::DELETE("$api_v1/comments/{comment_id}", CommentController::class);
