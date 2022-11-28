@@ -22,10 +22,19 @@ class PostCommentController extends BaseController
                 'user_id' => [Rules::REQUIRED, Rules::INTEGER],
                 'content' => [Rules::STRING, Rules::REQUIRED, Rules::NOT_EMPTY]
             ]
+        ],
+        'index' => [
+            'url' => [
+                'post_id' => [Rules::INTEGER]
+            ],
+            'query' => [
+                'limit' => [Rules::INTEGER],
+                'page' => [Rules::INTEGER]
+            ]
         ]
     ];
 
-    public function index($post_id)
+    protected function index($post_id)
     {
         $comments =
             ResourceHelper::getResourcesPaginated(
@@ -43,7 +52,7 @@ class PostCommentController extends BaseController
         return $serializer->paginatorSerialize();
     }
 
-    public function create($post_id)
+    protected function create($post_id)
     {
         /**
          * @var User $user
