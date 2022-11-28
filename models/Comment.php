@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Comment extends Model
 {
+    public $timestamps = false;
     protected $fillable = [
         'content',
         'user_id',
