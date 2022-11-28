@@ -3,9 +3,13 @@
 namespace Controllers;
 
 use Constants\Rules;
+use CustomExceptions\ValidationException;
 use Helpers\RequestHelper;
 use Helpers\ResourceHelper;
+use Illuminate\Database\QueryException;
+use Models\Like;
 use Models\Post;
+use Models\User;
 use Serializers\PostSerializer;
 
 class PostController extends BaseController
@@ -22,6 +26,22 @@ class PostController extends BaseController
         'destroy' => [
             'url' => [
                 'post_id' => [Rules::INTEGER]
+            ]
+        ],
+        'likesPost' => [
+            'url' => [
+                'post_id' => [Rules::INTEGER]
+            ],
+            'payload' => [
+                'user_id' => [Rules::REQUIRED, Rules::INTEGER]
+            ]
+        ],
+        'unlikesPost' => [
+            'url' => [
+                'post_id' => [Rules::INTEGER]
+            ],
+            'payload' => [
+                'user_id' => [Rules::REQUIRED, Rules::INTEGER]
             ]
         ]
     ];
@@ -66,6 +86,63 @@ class PostController extends BaseController
         return [
             'data' => [
                 'message' => "Post #$post_id has been successfully deleted."
+            ]
+        ];
+    }
+
+    protected function likesPost($post_id)
+    {
+        /**
+         * @var Post $post
+         */
+        $post = ResourceHelper::findResource(Post::class, $post_id);
+        /**
+         * @var User $user
+         */
+        $user = ResourceHelper::findResource(User::class, $this->payload['user_id']);
+
+        try {
+
+            $post->likes()->create([
+                'user_id' => $user->id
+            ]);
+        } catch (QueryException $e) {
+
+            throw new ValidationException("You are already liked the post.");
+        }
+
+        return [
+          'data' => [
+              'message' => 'Success'
+          ]
+        ];
+    }
+
+    protected function unlikesPost($post_id)
+    {
+        /**
+         * @var Post $post
+         */
+        $post = ResourceHelper::findResource(Post::class, $post_id);
+        /**
+         * @var User $user
+         */
+        $user = ResourceHelper::findResource(User::class, $this->payload['user_id']);
+        /**
+         * @var Like $like
+         */
+        $like =
+            Like::query()->where('user_id', $user->id)->where('post_id', $post_id)->first();
+
+        if (! $like) {
+            throw new ValidationException("You are already not liked the post.");
+        }
+
+        $like->delete();
+
+        return [
+            'data' => [
+                'message' => 'Success'
             ]
         ];
     }
