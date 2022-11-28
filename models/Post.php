@@ -49,7 +49,7 @@ class Post extends Model
         /**
          * @var Collection $likes
          */
-        $likes = $this->likes;
+        $likes = $this->likes->reverse();
 
         $recentUserLikes = [];
 
