@@ -21,6 +21,7 @@ require_once "routes/v1/urls.php";
 use Components\Route;
 use CustomExceptions\ValidationException;
 use CustomExceptions\ResourceNotFoundException;
+use CustomExceptions\AuthenticationException;
 
 $response = [];
 
@@ -38,6 +39,14 @@ try {
             'message' => $e->getMessage()
         ],
         'status_code' => \Constants\StatusCodes::NOT_FOUND
+    ];
+
+} catch (AuthenticationException $e) {
+    $response = [
+        'data' => [
+            'message' => $e->getMessage()
+        ],
+        'status_code' => \Constants\StatusCodes::UNAUTHORIZED
     ];
 
 } catch (ValidationException $e) {

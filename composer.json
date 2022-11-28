@@ -13,7 +13,8 @@
       "CustomExceptions\\": "exceptions/",
       "Helpers\\": "helpers/",
       "Models\\": "models/",
-      "Serializers\\": "serializers/"
+      "Serializers\\": "serializers/",
+      "Mixins\\": "mixins/"
     }
   },
   "scripts": {

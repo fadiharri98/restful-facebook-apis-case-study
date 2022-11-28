@@ -60,6 +60,12 @@ abstract class BaseController
     public function __construct()
     {
         $this->validationComponent = new ValidationComponent();
+
+        if (method_exists($this, 'authenticateUser'))
+        {
+            // if sub Controller use AuthenticationMixin, then we need to authenticate the user
+            $this->authenticateUser();
+        }
     }
 
     /**

@@ -9,6 +9,7 @@ class StatusCodes extends BaseConstant
     // 300
     const REDIRECT = 301;
     // 400
+    const UNAUTHORIZED = 401;
     const NOT_FOUND = 404;
     const METHOD_NOT_ALLOWED = 405;
     const VALIDATION_ERROR = 422;
