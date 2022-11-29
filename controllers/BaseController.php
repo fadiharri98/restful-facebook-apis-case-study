@@ -4,6 +4,7 @@ namespace Controllers;
 use Components\ValidationComponent;
 use Constants\RequestVerbs;
 use Constants\StatusCodes;
+use CustomExceptions\ValidationException;
 use Exception;
 use Helpers\RequestHelper;
 
@@ -69,22 +70,18 @@ abstract class BaseController
     }
 
     /**
-     * @throws Exception if handler (method) doesn't exist.
+     * process request validation into three levels
+     * validate url params
+     * validate query params
+     * validate request payload
+     * @param string $handler
+     * @param array $arguments
+     * @return void
+     * @throws ValidationException if request in any level isn't valid.
+     * @throws Exception if request Payload isn't valid JSON.
      */
-    public function __call($name, $arguments)
+    protected function validateRequest($handler, $arguments)
     {
-        $this->handler = $handler = $this->handlerMap[$name] ?? $name;
-
-        if (! method_exists($this, $handler))
-        {
-            $exception_message = sprintf(
-                "Handler `%s` not defined in `%s` controller.",
-                $handler,
-                get_class($this)
-            );
-            throw new Exception("$exception_message");
-        }
-
         $handler_validation = ($this->validationSchema[$handler] ?? []);
 
         if (key_exists('url', $handler_validation))
@@ -112,8 +109,15 @@ abstract class BaseController
             );
         }
 
-        $response = $this->$handler(...$arguments);
+    }
 
+    /**
+     * @param array $response
+     * @return void
+     * @throws Exception if response hasn't data key.
+     */
+    protected function validateResponse(&$response)
+    {
         /**
          * validation: response should always has `data` & `status_code`
          */
@@ -127,6 +131,31 @@ abstract class BaseController
         {
             $response['status_code'] = StatusCodes::SUCCESS;
         }
+
+    }
+
+    /**
+     * @throws Exception if handler (method) doesn't exist.
+     */
+    public function __call($name, $arguments)
+    {
+        $this->handler = $handler = $this->handlerMap[$name] ?? $name;
+
+        if (! method_exists($this, $handler))
+        {
+            $exception_message = sprintf(
+                "Handler `%s` not defined in `%s` controller.",
+                $handler,
+                get_class($this)
+            );
+            throw new Exception("$exception_message");
+        }
+
+        $this->validateRequest($handler, $arguments);
+
+        $response = $this->$handler(...$arguments);
+
+        $this->validateResponse($response);
 
         return $response;
     }
