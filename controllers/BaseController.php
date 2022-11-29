@@ -22,6 +22,12 @@ abstract class BaseController
         RequestVerbs::DELETE => 'destroy'
     ];
 
+    /**
+     * has resolved handler from $handlerMap
+     * @var string $handler
+     */
+    protected string $handler;
+
     protected ValidationComponent $validationComponent;
 
     /**
@@ -57,11 +63,6 @@ abstract class BaseController
      */
     protected array $validationSchema;
 
-    /**
-     * @var array $handlerSkipAuthenticat
-     */
-    protected array $handlerSkipAuthentication = [];
-
     public function __construct()
     {
         $this->validationComponent = new ValidationComponent();
@@ -72,7 +73,7 @@ abstract class BaseController
      */
     public function __call($name, $arguments)
     {
-        $handler = $this->handlerMap[$name] ?? $name;
+        $this->handler = $handler = $this->handlerMap[$name] ?? $name;
 
         if (! method_exists($this, $handler))
         {
@@ -82,12 +83,6 @@ abstract class BaseController
                 get_class($this)
             );
             throw new Exception("$exception_message");
-        }
-
-        if (method_exists($this, 'authenticateUser') && ! in_array($handler, $this->handlerSkipAuthentication))
-        {
-            // if sub Controller use AuthenticationMixin, then we need to authenticate the user
-            $this->authenticateUser();
         }
 
         $handler_validation = ($this->validationSchema[$handler] ?? []);
