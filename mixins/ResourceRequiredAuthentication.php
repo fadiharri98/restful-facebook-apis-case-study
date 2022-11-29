@@ -5,7 +5,7 @@ namespace Mixins;
 use CustomExceptions\AuthenticationException;
 use Models\User;
 
-trait AuthenticationMixin
+trait ResourceRequiredAuthentication
 {
     /**
      * @throws AuthenticationException if there's no authenticated user.
