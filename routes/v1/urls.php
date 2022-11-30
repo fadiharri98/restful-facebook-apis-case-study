@@ -23,11 +23,11 @@ Route::PUT("$api_v1/users/{user_id}", UserController::class);
 Route::DELETE("$api_v1/users/{user_id}", UserController::class);
 
 Route::GET("$api_v1/posts/{post_id}", PostController::class, "show");
+Route::POST("$api_v1/posts", PostController::class);
 Route::PUT("$api_v1/posts/{post_id}", PostController::class);
 Route::DELETE("$api_v1/posts/{post_id}", PostController::class);
 
 Route::GET("$api_v1/users/{user_id}/posts", UserPostController::class);
-Route::POST("$api_v1/users/{user_id}/posts", UserPostController::class);
 
 Route::GET("$api_v1/posts/{post_id}/likes", PostLikeController::class);
 
