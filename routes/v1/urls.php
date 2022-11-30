@@ -31,8 +31,8 @@ Route::GET("$api_v1/users/{user_id}/posts", UserPostController::class);
 
 Route::GET("$api_v1/posts/{post_id}/likes", PostLikeController::class);
 
-Route::POST("$api_v1/posts/{post_id}/like", PostController::class, "likesPost");
-Route::POST("$api_v1/posts/{post_id}/unlike", PostController::class, "unlikesPost");
+Route::POST("$api_v1/posts/{post_id}/like", PostController::class, "likeThePost");
+Route::POST("$api_v1/posts/{post_id}/unlike", PostController::class, "unlikeThePost");
 
 Route::GET("$api_v1/posts/{post_id}/comments", PostCommentController::class);
 Route::POST("$api_v1/posts/{post_id}/comments", PostCommentController::class);

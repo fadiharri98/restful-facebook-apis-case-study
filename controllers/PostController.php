@@ -147,7 +147,7 @@ class PostController extends BaseController
     }
 
     // POST api/v1/posts/{post_id}/like
-    protected function likesPost($post_id)
+    protected function LikeThePost($post_id)
     {
         $user = $this->authenticatedUser;
         /**
@@ -173,7 +173,7 @@ class PostController extends BaseController
     }
 
     // POST api/v1/posts/{post_id}/unlike
-    protected function unlikesPost($post_id)
+    protected function unlikeThePost($post_id)
     {
         $user = $this->authenticatedUser;
         /**
