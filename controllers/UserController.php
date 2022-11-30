@@ -4,14 +4,16 @@ namespace Controllers;
 
 use Constants\Rules;
 use Constants\StatusCodes;
-use CustomExceptions\ResourceNotFoundException;
 use Helpers\RequestHelper;
 use Helpers\ResourceHelper;
+use Mixins\AuthenticateUser;
 use Models\User;
 use Serializers\UserSerializer;
 
 class UserController extends BaseController
 {
+    use AuthenticateUser;
+
     protected array $validationSchema = [
         'show' => [
             'url' => [
@@ -70,14 +72,17 @@ class UserController extends BaseController
         ],
     ];
 
-    /**
-     * @param integer $user_id
-     * @return array
-     * @throws ResourceNotFoundException if no match user by id.
-     */
+    // GET api/v1/users/{user_id}
     protected function show(int $user_id): array
     {
+        /**
+         * @var User $user
+         */
         $user = ResourceHelper::findResource(User::class, $user_id);
+
+        if ($user->id != $this->authenticatedUser->id) {
+            ResourceHelper::validateUserIsAdmin($this->authenticatedUser);
+        }
 
         $serializer = new UserSerializer($user);
 
@@ -86,8 +91,11 @@ class UserController extends BaseController
         ];
     }
 
+    // GET api/v1/users
     protected function index()
     {
+        ResourceHelper::validateUserIsAdmin($this->authenticatedUser);
+
         $serializer =
             new UserSerializer(
                 ResourceHelper::getResourcesPaginated(User::class)
@@ -96,8 +104,11 @@ class UserController extends BaseController
         return $serializer->paginatorSerialize();
     }
 
+    // POST api/v1/users
     protected function create()
     {
+        ResourceHelper::validateUserIsAdmin($this->authenticatedUser);
+
         $payload = RequestHelper::getRequestPayload();
         $payload['password'] = md5($payload['password']);
 
@@ -111,6 +122,7 @@ class UserController extends BaseController
         ];
     }
 
+    // PUT api/v1/users
     protected function update($user_id)
     {
         /**
@@ -122,6 +134,11 @@ class UserController extends BaseController
          */
         $payload = RequestHelper::getRequestPayload();
 
+        if ($user->id != $this->authenticatedUser->id)
+        {
+            ResourceHelper::validateUserIsAdmin($this->authenticatedUser);
+        }
+
         $user->update($payload);
 
         return [
@@ -132,12 +149,15 @@ class UserController extends BaseController
         ];
     }
 
+    // DELETE api/v1/users
     protected function destroy($user_id)
     {
         /**
          * @var User $user
          */
         $user = ResourceHelper::findResource(User::class, $user_id);
+
+        ResourceHelper::validateUserIsAdmin($this->authenticatedUser);
 
         $user->delete();
 

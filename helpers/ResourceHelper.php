@@ -87,6 +87,20 @@ class ResourceHelper
 
     /**
      * @param User $user
+     * @return void
+     * @throws AuthorizationException if admin isn't admin
+     */
+    public static function validateUserIsAdmin($user)
+    {
+        if(! $user->is_admin) {
+
+            throw new AuthorizationException("this API isn't allowed for none admin users.");
+        }
+
+    }
+
+    /**
+     * @param User $user
      * @param Model $model
      * @param bool $skip_admin
      * @return void
