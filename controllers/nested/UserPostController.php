@@ -33,6 +33,7 @@ class UserPostController extends BaseController
         ]
     ];
 
+    // GET api/v1/users/{user_id}/posts
     protected function index($user_id)
     {
         $user =

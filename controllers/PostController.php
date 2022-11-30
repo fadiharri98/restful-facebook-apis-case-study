@@ -52,6 +52,7 @@ class PostController extends BaseController
         ];
     }
 
+    // GET api/v1/posts/{post_id}
     protected function show($post_id)
     {
         $post =
@@ -68,6 +69,7 @@ class PostController extends BaseController
         ];
     }
 
+    // PUT api/v1/posts/{post_id}
     protected function update($post_id)
     {
         $payload = RequestHelper::getRequestPayload();
@@ -92,6 +94,7 @@ class PostController extends BaseController
         ];
     }
 
+    // DELETE api/v1/posts/{post_id}
     protected function destroy($post_id)
     {
         /**
@@ -112,6 +115,7 @@ class PostController extends BaseController
         ];
     }
 
+    // POST api/v1/posts/{post_id}/like
     protected function likesPost($post_id)
     {
         $user = $this->authenticatedUser;
@@ -137,6 +141,7 @@ class PostController extends BaseController
         ];
     }
 
+    // POST api/v1/posts/{post_id}/unlike
     protected function unlikesPost($post_id)
     {
         $user = $this->authenticatedUser;
