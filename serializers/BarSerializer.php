@@ -2,21 +2,17 @@
 
 namespace Serializers;
 
-use Models\Comment;
 
-class CommentSerializer extends BaseSerializer
+use Models\Bar;
+
+class BarSerializer extends BaseSerializer
 {
-    protected $mapFieldWithCustomName = [
-        'content' => 'comment'
-    ];
-
     /**
      * @return bool
      */
     public function validModel($model = null)
     {
-        return ($model ?: $this->model) instanceof Comment;
-
+        return ($model ?: $this->model) instanceof Bar;
     }
 
     /**
@@ -26,11 +22,16 @@ class CommentSerializer extends BaseSerializer
     {
         return [
             'id',
-            'content',
-            'user:id,name,profile_img',
+            'value',
             'created'
         ];
+    }
 
+    public function toArray()
+    {
+        return [
+            'id' => "bar-model-" . $this->model->id
+        ];
     }
 
 }
