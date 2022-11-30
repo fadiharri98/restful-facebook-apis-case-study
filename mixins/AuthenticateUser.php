@@ -8,15 +8,14 @@ use Models\User;
 trait AuthenticateUser
 {
     /**
+     * @var User $authenticatedUser
+     */
+    protected User $authenticatedUser;
+
+    /**
      * @var array $handlerSkipAuthenticat
      */
     protected array $handlerSkipAuthentication = [];
-
-    /**
-     * has resolved handler from $handlerMap
-     * @var string $handler
-     */
-    protected string $handler;
 
     /**
      * @throws AuthenticationException if there's no authenticated user.
@@ -44,13 +43,12 @@ trait AuthenticateUser
             throw new AuthenticationException("incorrect credentials.");
         }
 
+        $this->authenticatedUser = $user;
     }
 
     public function __call(string $name, array $arguments)
     {
-        $response = parent::__call($name, $arguments);
-
-        $handler = $this->handler ?: $name;
+        $handler = $this->handlerMap[$name] ?? $name;
 
         if (! in_array($handler, $this->handlerSkipAuthentication))
         {
@@ -58,6 +56,6 @@ trait AuthenticateUser
             $this->authenticateUser();
         }
 
-        return $response;
+        return parent::__call($name, $arguments);
     }
 }
