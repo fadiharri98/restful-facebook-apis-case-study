@@ -5,8 +5,13 @@ use Illuminate\Database\Schema\Blueprint;
 Manager::schema()->create('likes', function (Blueprint $table) {
     $table->id();
 
-    $table->foreignId('post_id')->constrained();
-    $table->foreignId('user_id')->constrained();
+    $table->foreignId('post_id')
+        ->constrained()
+        ->cascadeOnDelete();
+
+    $table->foreignId('user_id')
+        ->constrained()
+        ->cascadeOnDelete();
 
     $table->unique(['user_id', 'post_id']);
 

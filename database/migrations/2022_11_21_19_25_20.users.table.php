@@ -13,5 +13,7 @@ Manager::schema()->create('users', function (Blueprint $table) {
     $table->string('password', 500);
     $table->string('profile_img', 1000)->nullable();
 
+    $table->boolean('is_admin')->default(0);
+
     $table->timestamp('created')->useCurrent();
 });
