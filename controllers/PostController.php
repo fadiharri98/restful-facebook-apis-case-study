@@ -108,15 +108,16 @@ class PostController extends BaseController
         /**
          * @var Post $post
          */
-        ($post = ResourceHelper::findResource(Post::class, $post_id))
-            ->update([
-                'content' => $payload['content']
-            ]);
+        $post = ResourceHelper::findResource(Post::class, $post_id);
 
         ResourceHelper::validateIfUserAllowedTo(
             $this->authenticatedUser,
             $post
         );
+
+        $post->update([
+            'content' => $payload['content']
+        ]);
 
         return [
             'data' => [
@@ -131,13 +132,14 @@ class PostController extends BaseController
         /**
          * @var Post $post
          */
-        ($post = ResourceHelper::findResource(Post::class, $post_id))
-            ->delete();
+        $post = ResourceHelper::findResource(Post::class, $post_id);
 
         ResourceHelper::validateIfUserAllowedTo(
             $this->authenticatedUser,
             $post
         );
+
+        $post->delete();
 
         return [
             'data' => [
