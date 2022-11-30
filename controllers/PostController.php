@@ -147,7 +147,7 @@ class PostController extends BaseController
     }
 
     // POST api/v1/posts/{post_id}/like
-    protected function LikeThePost($post_id)
+    protected function likeThePost($post_id)
     {
         $user = $this->authenticatedUser;
         /**
