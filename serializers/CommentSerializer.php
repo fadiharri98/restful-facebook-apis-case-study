@@ -27,7 +27,7 @@ class CommentSerializer extends BaseSerializer
         return [
             'id',
             'content',
-            'user:id,username,profile_img',
+            'user:id,name,profile_img',
             'created'
         ];
 
