@@ -1,15 +1,21 @@
 <?php
-error_reporting(E_ERROR | E_PARSE);
-
 /**
  * boostrap all project dependencies
  */
 require_once 'bootstrap.php';
 
 /*
- * define response to be always in JSON format (RESTFUL-API)
+ * define response to be always in JSON format (RESTful-API)
  */
 header('Content-Type: application/json; charset=utf-8');
+
+/**
+ * disable annoying warnings if its implements in .env with true value
+ */
+if (($_ENV['DISABLE_WARNINGS'] ?? "false") == "true") {
+
+    error_reporting(E_ERROR | E_PARSE);
+}
 
 /*
  * register all app URLs (according to RESTFUL-API standards)
@@ -23,6 +29,7 @@ use Components\Route;
 use CustomExceptions\ValidationException;
 use CustomExceptions\ResourceNotFoundException;
 use CustomExceptions\AuthenticationException;
+use CustomExceptions\AuthorizationException;
 
 $response = [];
 
@@ -43,11 +50,21 @@ try {
     ];
 
 } catch (AuthenticationException $e) {
+
     $response = [
         'data' => [
             'message' => $e->getMessage()
         ],
         'status_code' => \Constants\StatusCodes::UNAUTHORIZED
+    ];
+
+}  catch (AuthorizationException $e) {
+
+    $response = [
+        'data' => [
+            'message' => $e->getMessage()
+        ],
+        'status_code' => \Constants\StatusCodes::FORBIDDEN
     ];
 
 } catch (ValidationException $e) {
