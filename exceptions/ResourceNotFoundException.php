@@ -2,12 +2,23 @@
 namespace CustomExceptions;
 
 use Constants\StatusCodes;
-use Exception;
 
-class ResourceNotFoundException extends Exception
+class ResourceNotFoundException extends ClientException
 {
     public function __construct($resource) {
 
-        parent::__construct("$resource not found.", StatusCodes::NOT_FOUND, null);
+        parent::__construct(
+            "$resource not found."
+        );
+    }
+
+    function getClientMessage(): string
+    {
+        return "not found";
+    }
+
+    function getClientCode(): int
+    {
+        return StatusCodes::NOT_FOUND;
     }
 }

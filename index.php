@@ -26,10 +26,7 @@ require_once "routes/v1/urls.php";
  * handle coming request via Route component
  */
 use Components\Route;
-use CustomExceptions\ValidationException;
-use CustomExceptions\ResourceNotFoundException;
-use CustomExceptions\AuthenticationException;
-use CustomExceptions\AuthorizationException;
+use CustomExceptions\ClientException;
 
 $response = [];
 
@@ -41,39 +38,13 @@ try {
         $response['sql_queries'] = Manager::getQueryLog();
     }
 
-} catch (ResourceNotFoundException $e) {
-    $response = [
-        'data' => [
-            'message' => $e->getMessage()
-        ],
-        'status_code' => \Constants\StatusCodes::NOT_FOUND
-    ];
+} catch (ClientException $e) {
 
-} catch (AuthenticationException $e) {
-
-    $response = [
-        'data' => [
-            'message' => $e->getMessage()
-        ],
-        'status_code' => \Constants\StatusCodes::UNAUTHORIZED
-    ];
-
-}  catch (AuthorizationException $e) {
-
-    $response = [
-        'data' => [
-            'message' => $e->getMessage()
-        ],
-        'status_code' => \Constants\StatusCodes::FORBIDDEN
-    ];
-
-} catch (ValidationException $e) {
-    // this should always to be handled, is client not server issue.
     $response = [
         'data' => [
             'validation_error' => $e->getMessage()
         ],
-        'status_code' => \Constants\StatusCodes::VALIDATION_ERROR
+        'status_code' => $e->getCode()
     ];
 
 } catch (Exception $e) {

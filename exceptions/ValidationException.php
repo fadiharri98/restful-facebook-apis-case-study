@@ -2,12 +2,16 @@
 namespace CustomExceptions;
 
 use Constants\StatusCodes;
-use Exception;
-use Throwable;
 
-class ValidationException extends Exception
+class ValidationException extends ClientException
 {
-    public function __construct($message, $code = StatusCodes::VALIDATION_ERROR, Throwable $previous = null) {
-        parent::__construct($message, $code, $previous);
+    function getClientMessage(): string
+    {
+        return "sent data isn't valid";
+    }
+
+    function getClientCode(): int
+    {
+        return StatusCodes::VALIDATION_ERROR;
     }
 }

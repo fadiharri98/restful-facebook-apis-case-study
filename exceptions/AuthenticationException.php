@@ -3,14 +3,16 @@
 namespace CustomExceptions;
 
 use Constants\StatusCodes;
-use Exception;
 
-class AuthenticationException extends Exception
+class AuthenticationException extends ClientException
 {
-    public function __construct($message="")
+    function getClientMessage(): string
     {
-        parent::__construct(
-            $message ?: "not authorized.",
-            StatusCodes::UNAUTHORIZED);
+        return "not authorized";
+    }
+
+    function getClientCode(): int
+    {
+        return StatusCodes::UNAUTHORIZED;
     }
 }
