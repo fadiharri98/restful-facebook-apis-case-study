@@ -4,10 +4,14 @@ namespace Controllers;
 
 use Constants\Rules;
 use Helpers\ResourceHelper;
+use Mixins\AuthenticateUser;
 use Models\Comment;
+use Models\Post;
 
 class CommentController extends BaseController
 {
+    use AuthenticateUser;
+
     protected array $validationSchema = [
         'update' => [
             'url' => [
@@ -26,8 +30,17 @@ class CommentController extends BaseController
 
     public function update($comment_id)
     {
-        ResourceHelper::findResource(Comment::class, $comment_id)->
-        update([
+        /**
+         * @var Post $post
+         */
+        $post = ResourceHelper::findResource(Comment::class, $comment_id);
+
+        ResourceHelper::validateIfUserAllowedTo(
+            $this->authenticatedUser,
+            $post
+        );
+
+        $post->update([
             'content' => $this->payload['content']
         ]);
 
@@ -40,7 +53,17 @@ class CommentController extends BaseController
 
     public function destroy($comment_id)
     {
-        ResourceHelper::findResource(Comment::class, $comment_id)->delete();
+        /**
+         * @var Post $post
+         */
+        $post = ResourceHelper::findResource(Comment::class, $comment_id);
+
+        ResourceHelper::validateIfUserAllowedTo(
+            $this->authenticatedUser,
+            $post
+        );
+
+        $post->delete();
 
         return [
           'data' => [

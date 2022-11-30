@@ -6,6 +6,7 @@ use Constants\Rules;
 use Constants\StatusCodes;
 use Controllers\BaseController;
 use Helpers\ResourceHelper;
+use Mixins\AuthenticateUser;
 use Models\Comment;
 use Models\Post;
 use Models\User;
@@ -13,13 +14,14 @@ use Serializers\CommentSerializer;
 
 class PostCommentController extends BaseController
 {
+    use AuthenticateUser;
+
     protected array $validationSchema = [
         'create' => [
             'url' => [
                 'post_id' => [Rules::INTEGER]
             ],
             'payload' => [
-                'user_id' => [Rules::REQUIRED, Rules::INTEGER],
                 'content' => [Rules::STRING, Rules::REQUIRED, Rules::NOT_EMPTY]
             ]
         ],
@@ -54,10 +56,7 @@ class PostCommentController extends BaseController
 
     protected function create($post_id)
     {
-        /**
-         * @var User $user
-         */
-        $user = ResourceHelper::findResource(User::class, $this->payload['user_id']);
+        $user = $this->authenticatedUser;
 
         /**
          * @var Comment $comment
