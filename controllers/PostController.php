@@ -34,17 +34,11 @@ class PostController extends BaseController
         'likesPost' => [
             'url' => [
                 'post_id' => [Rules::INTEGER]
-            ],
-            'payload' => [
-                'user_id' => [Rules::REQUIRED, Rules::INTEGER]
             ]
         ],
         'unlikesPost' => [
             'url' => [
                 'post_id' => [Rules::INTEGER]
-            ],
-            'payload' => [
-                'user_id' => [Rules::REQUIRED, Rules::INTEGER]
             ]
         ]
     ];
@@ -120,14 +114,11 @@ class PostController extends BaseController
 
     protected function likesPost($post_id)
     {
+        $user = $this->authenticatedUser;
         /**
          * @var Post $post
          */
         $post = ResourceHelper::findResource(Post::class, $post_id);
-        /**
-         * @var User $user
-         */
-        $user = ResourceHelper::findResource(User::class, $this->payload['user_id']);
 
         try {
 
@@ -148,19 +139,16 @@ class PostController extends BaseController
 
     protected function unlikesPost($post_id)
     {
+        $user = $this->authenticatedUser;
         /**
          * @var Post $post
          */
         $post = ResourceHelper::findResource(Post::class, $post_id);
         /**
-         * @var User $user
-         */
-        $user = ResourceHelper::findResource(User::class, $this->payload['user_id']);
-        /**
          * @var Like $like
          */
         $like =
-            Like::query()->where('user_id', $user->id)->where('post_id', $post_id)->first();
+            Like::query()->where('user_id', $user->id)->where('post_id', $post->id)->first();
 
         if (! $like) {
             throw new ValidationException("You are already not liked the post.");
