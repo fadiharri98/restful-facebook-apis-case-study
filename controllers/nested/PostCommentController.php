@@ -36,6 +36,7 @@ class PostCommentController extends BaseController
         ]
     ];
 
+    // GET api/v1/posts/{post_id}/comments
     protected function index($post_id)
     {
         $comments =
@@ -54,6 +55,7 @@ class PostCommentController extends BaseController
         return $serializer->paginatorSerialize();
     }
 
+    // POST api/v1/posts/{post_id}/comments
     protected function create($post_id)
     {
         $user = $this->authenticatedUser;

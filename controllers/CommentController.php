@@ -28,6 +28,7 @@ class CommentController extends BaseController
         ]
     ];
 
+    // PUT api/v1/comments/{comment_id}
     public function update($comment_id)
     {
         /**
@@ -51,6 +52,7 @@ class CommentController extends BaseController
         ];
     }
 
+    // DELETE api/v1/comments/{comment_id}
     public function destroy($comment_id)
     {
         /**

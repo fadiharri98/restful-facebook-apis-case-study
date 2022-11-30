@@ -23,6 +23,7 @@ class PostLikeController extends BaseController
         ]
     ];
 
+    // GET api/v1/posts/{post_id}/comments
     protected function index($post_id)
     {
         $likes =
