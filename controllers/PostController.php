@@ -49,6 +49,15 @@ class PostController extends BaseController
         ]
     ];
 
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->handlerSkipAuthentication = [
+            'show'
+        ];
+    }
+
     protected function show($post_id)
     {
         $post =
@@ -69,10 +78,18 @@ class PostController extends BaseController
     {
         $payload = RequestHelper::getRequestPayload();
 
-        ResourceHelper::findResource(Post::class, $post_id)
+        /**
+         * @var Post $post
+         */
+        ($post = ResourceHelper::findResource(Post::class, $post_id))
             ->update([
                 'content' => $payload['content']
             ]);
+
+        ResourceHelper::validateIfUserAllowedTo(
+            $this->authenticatedUser,
+            $post
+        );
 
         return [
             'data' => [
@@ -83,8 +100,16 @@ class PostController extends BaseController
 
     protected function destroy($post_id)
     {
-        ResourceHelper::findResource(Post::class, $post_id)
+        /**
+         * @var Post $post
+         */
+        ($post = ResourceHelper::findResource(Post::class, $post_id))
             ->delete();
+
+        ResourceHelper::validateIfUserAllowedTo(
+            $this->authenticatedUser,
+            $post
+        );
 
         return [
             'data' => [
