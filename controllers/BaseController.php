@@ -1,7 +1,7 @@
 <?php
 namespace Controllers;
 
-use Components\ValidationComponent;
+use Components\Validator;
 use Constants\RequestVerbs;
 use Constants\StatusCodes;
 use CustomExceptions\ValidationException;
@@ -29,7 +29,7 @@ abstract class BaseController
      */
     protected string $handler;
 
-    protected ValidationComponent $validationComponent;
+    protected Validator $validator;
 
     /**
      * Contains the URL query params as an associative array when handling registered route.
@@ -66,7 +66,7 @@ abstract class BaseController
 
     public function __construct()
     {
-        $this->validationComponent = new ValidationComponent();
+        $this->validator = new Validator();
     }
 
     /**
@@ -86,13 +86,13 @@ abstract class BaseController
 
         if (key_exists('url', $handler_validation))
         {
-            $this->validationComponent->validateUrlParams($handler_validation['url'], [...$arguments]);
+            $this->validator->validateUrlParams($handler_validation['url'], [...$arguments]);
         }
 
         if (key_exists('query', $handler_validation))
         {
             $this->queryParams = $queryParams = RequestHelper::getQueryParams();
-            $this->validationComponent->validateQueryParams(
+            $this->validator->validateQueryParams(
                 $handler_validation['query'],
                 $queryParams,
                 ($arguments ? end($arguments) : null)
@@ -102,7 +102,7 @@ abstract class BaseController
         if (key_exists('payload', $handler_validation))
         {
             $this->payload = $payload = RequestHelper::getRequestPayload();
-            $this->validationComponent->validateRequestPayload(
+            $this->validator->validateRequestPayload(
                 $handler_validation['payload'],
                 $payload,
                 ($arguments ? end($arguments) : null)
