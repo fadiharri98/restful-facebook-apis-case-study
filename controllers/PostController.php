@@ -110,10 +110,7 @@ class PostController extends BaseController
          */
         $post = ResourceHelper::findResource(Post::class, $post_id);
 
-        ResourceHelper::validateIfUserAllowedTo(
-            $this->authenticatedUser,
-            $post
-        );
+        $this->authenticatedUser->validateIsAuthorizedTo($post);
 
         $post->update([
             'content' => $payload['content']
@@ -134,10 +131,7 @@ class PostController extends BaseController
          */
         $post = ResourceHelper::findResource(Post::class, $post_id);
 
-        ResourceHelper::validateIfUserAllowedTo(
-            $this->authenticatedUser,
-            $post
-        );
+        $this->authenticatedUser->validateIsAuthorizedTo($post);
 
         $post->delete();
 

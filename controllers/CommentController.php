@@ -6,7 +6,6 @@ use Constants\Rules;
 use Helpers\ResourceHelper;
 use Mixins\AuthenticateUser;
 use Models\Comment;
-use Models\Post;
 
 class CommentController extends BaseController
 {
@@ -32,16 +31,13 @@ class CommentController extends BaseController
     public function update($comment_id)
     {
         /**
-         * @var Post $post
+         * @var Comment $comment
          */
-        $post = ResourceHelper::findResource(Comment::class, $comment_id);
+        $comment = ResourceHelper::findResource(Comment::class, $comment_id);
 
-        ResourceHelper::validateIfUserAllowedTo(
-            $this->authenticatedUser,
-            $post
-        );
+        $this->authenticatedUser->validateIsAuthorizedTo($comment);
 
-        $post->update([
+        $comment->update([
             'content' => $this->payload['content']
         ]);
 
@@ -56,16 +52,13 @@ class CommentController extends BaseController
     public function destroy($comment_id)
     {
         /**
-         * @var Post $post
+         * @var Comment $comment
          */
-        $post = ResourceHelper::findResource(Comment::class, $comment_id);
+        $comment = ResourceHelper::findResource(Comment::class, $comment_id);
 
-        ResourceHelper::validateIfUserAllowedTo(
-            $this->authenticatedUser,
-            $post
-        );
+        $this->authenticatedUser->validateIsAuthorizedTo($comment);
 
-        $post->delete();
+        $comment->delete();
 
         return [
           'data' => [

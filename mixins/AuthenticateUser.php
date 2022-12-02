@@ -5,6 +5,9 @@ namespace Mixins;
 use CustomExceptions\AuthenticationException;
 use Models\User;
 
+/**
+ * only compatible with Controllers.
+ */
 trait AuthenticateUser
 {
     /**

@@ -81,7 +81,8 @@ class UserController extends BaseController
         $user = ResourceHelper::findResource(User::class, $user_id);
 
         if ($user->id != $this->authenticatedUser->id) {
-            ResourceHelper::validateUserIsAdmin($this->authenticatedUser);
+
+            $this->authenticatedUser->validateIsAuthorizedAdmin();
         }
 
         $serializer = new UserSerializer($user);
@@ -94,7 +95,7 @@ class UserController extends BaseController
     // GET api/v1/users
     protected function index()
     {
-        ResourceHelper::validateUserIsAdmin($this->authenticatedUser);
+        $this->authenticatedUser->validateIsAuthorizedAdmin();
 
         $serializer =
             new UserSerializer(
@@ -107,7 +108,7 @@ class UserController extends BaseController
     // POST api/v1/users
     protected function create()
     {
-        ResourceHelper::validateUserIsAdmin($this->authenticatedUser);
+        $this->authenticatedUser->validateIsAuthorizedAdmin();
 
         $payload = RequestHelper::getRequestPayload();
         $payload['password'] = md5($payload['password']);
@@ -136,7 +137,8 @@ class UserController extends BaseController
 
         if ($user->id != $this->authenticatedUser->id)
         {
-            ResourceHelper::validateUserIsAdmin($this->authenticatedUser);
+
+            $this->authenticatedUser->validateIsAuthorizedAdmin();
         }
 
         $user->update($payload);
@@ -157,7 +159,7 @@ class UserController extends BaseController
          */
         $user = ResourceHelper::findResource(User::class, $user_id);
 
-        ResourceHelper::validateUserIsAdmin($this->authenticatedUser);
+        $this->authenticatedUser->validateIsAuthorizedAdmin();
 
         $user->delete();
 
