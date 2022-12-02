@@ -52,12 +52,13 @@ class RequestHelper
     }
 
     /**
-     * Splitting the uri into parts (array) except for the domain.
-     * E.g: splitting https://example.com/api/version/resource into ['api', 'version', 'resource'].
+     * Split the uri path into parts (array).
+     * Note: uri path doesn't include the domain
+     * E.g: uri `https://example.com/api/version/resource` path to ['api', 'version', 'resource'].
      * @param $uri
      * @return array
      */
-    public static function splittingUriPath($uri): array
+    public static function uriPathToArray($uri): array
     {
         return array_slice(explode('/', $uri), 2);
     }
