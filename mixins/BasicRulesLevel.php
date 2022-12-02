@@ -4,6 +4,9 @@ namespace Mixins;
 
 use CustomExceptions\ValidationException;
 
+/**
+ * Design to used only with Validator component.
+ */
 trait BasicRulesLevel
 {
 

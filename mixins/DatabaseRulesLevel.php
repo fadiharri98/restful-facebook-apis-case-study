@@ -6,6 +6,9 @@ use Exception;
 use CustomExceptions\ValidationException;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Design to used only with Validator component.
+ */
 trait DatabaseRulesLevel
 {
     /**

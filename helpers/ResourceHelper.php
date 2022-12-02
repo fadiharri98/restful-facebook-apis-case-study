@@ -2,14 +2,11 @@
 
 namespace Helpers;
 
-use Exception;
 use CustomExceptions\ResourceNotFoundException;
-use CustomExceptions\AuthorizationException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
-use Models\User;
 
 class ResourceHelper
 {
@@ -85,45 +82,4 @@ class ResourceHelper
         return self::getResources($model, $filters, $with, true);
     }
 
-    /**
-     * @param User $user
-     * @return void
-     * @throws AuthorizationException if admin isn't admin
-     */
-    public static function validateUserIsAdmin($user)
-    {
-        if(! $user->is_admin) {
-
-            throw new AuthorizationException("this API isn't allowed for none admin users.");
-        }
-
-    }
-
-    /**
-     * @param User $user
-     * @param Model $model
-     * @param bool $skip_admin
-     * @return void
-     * @throws AuthorizationException
-     * @throws Exception if passed model hasn't user_id
-     */
-    public static function validateIfUserAllowedTo($user, $model, $skip_admin=true)
-    {
-        /**
-         * bad use of helper method.
-         */
-        if ($model->user_id === null)
-        {
-            throw new Exception("to validate if user allowed, the model should has user_id.");
-        }
-
-        if ($skip_admin && $user->is_admin)
-        {
-            return;
-        } else if ($user->id != $model->user_id) {
-
-            throw new AuthorizationException("not allowed.");
-        }
-
-    }
 }
