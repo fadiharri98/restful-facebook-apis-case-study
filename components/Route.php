@@ -103,7 +103,7 @@ class Route
     {
         $uri = $_SERVER['REQUEST_URI'];
         $request_url_parts =
-            RequestHelper::splittingUriPath(
+            RequestHelper::uriPathToArray(
                 RequestHelper::getUriWithoutQueryParams($uri)
             );
         $request_method = $_SERVER['REQUEST_METHOD'];
