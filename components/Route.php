@@ -67,10 +67,8 @@ class Route
 
             if (! $break_loop)
             {
-                $method = $_SERVER['REQUEST_METHOD'];
                 return [
                     'url' => $route,
-                    'custom_handler' => self::$_ROUTES[$route][$method]['custom_handler'] ?? false,
                     'params' => $params
                 ];
             }
